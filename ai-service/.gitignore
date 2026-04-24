@@ -1,0 +1,157 @@
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+### Virtual environments ###
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+conda-env/
+
+### Distribution / packaging ###
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+sdist/
+var/
+.eggs/
+MANIFEST
+
+### Pip ###
+pip-log.txt
+pip-delete-this-directory.txt
+
+### PyInstaller ###
+*.manifest
+*.spec
+
+### Unit test / coverage ###
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+
+### MyPy / type checking ###
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+### Jupyter Notebook ###
+.ipynb_checkpoints/
+*.ipynb
+
+### Environment / Secrets ###
+.env
+.env.local
+.env.*.local
+.env.development
+.env.staging
+.env.production
+*.env
+secrets.json
+secrets.yaml
+secrets.yml
+config.local.py
+config.local.yaml
+
+### API Keys / Credentials ###
+**/credentials/
+**/*credentials*.json
+**/*service-account*.json
+**/*secret*.json
+google-credentials.json
+firebase-adminsdk*.json
+anthropic_key.txt
+openai_key.txt
+
+### Model / AI artifacts ###
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.gguf
+*.ggml
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.pb
+*.tflite
+*.onnx
+*.npy
+*.npz
+models/
+checkpoints/
+weights/
+embeddings/
+vector_store/
+chroma/
+faiss/
+qdrant_storage/
+weaviate_storage/
+
+### Logs ###
+logs/
+*.log
+*.log.*
+log/
+
+### Docker ###
+.dockerignore.local
+
+### OS ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+### IDE ###
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+*.suo
+*.sw?
+
+### FastAPI / Uvicorn ###
+.uvicorn_pid
+
+### Celery ###
+celerybeat-schedule
+celerybeat.pid
+
+### Temporary / misc ###
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
