@@ -40,6 +40,9 @@ public class SecurityConfig {
     private static final String[] PUBLIC_POST = {
             AppConstants.AUTH_BASE + "/login",
             AppConstants.AUTH_BASE + "/register",
+            AppConstants.AUTH_BASE + "/register/doctor",
+            AppConstants.AUTH_BASE + "/register/business",
+            AppConstants.AUTH_BASE + "/google-login",
             AppConstants.AUTH_BASE + "/refresh",
     };
 

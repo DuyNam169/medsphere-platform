@@ -17,6 +17,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,                "user.not_found"),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT,           "user.email_exists"),
     PHONE_ALREADY_EXISTS(HttpStatus.CONFLICT,           "user.phone_exists"),
+    PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND,             "user.profile_not_found"),
+    INVALID_VERIFICATION_STATUS(HttpStatus.BAD_REQUEST, "user.invalid_verification_status"),
 
     // ── Validation ────────────────────────────────────────────
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST,           "validation.failed"),
