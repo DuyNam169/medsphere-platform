@@ -1,4 +1,4 @@
-package com.medsphere.backend;
+package com.medsphere;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

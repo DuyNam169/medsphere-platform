@@ -1,51 +1,39 @@
 // ============================================================
-// routes/index.tsx — Cấu hình routing toàn bộ app
-// "/" → HomePage
-// "/ai" → AiPage (AI Chatbot)
-// "/login" → LoginPage
-// "/dashboard" → DashboardPage (cần đăng nhập)
+// router.tsx — src/app/router.tsx  (hoặc src/routes/index.tsx)
+// App-level routing. Imports pages from packages.
 // ============================================================
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
-import { LoginPage, DashboardPage, UsersPage } from '../modules/user/pages';
-import { HomePage } from '../modules/home';
-import { AiPage } from '../modules/ai';
 
-export const AppRoutes = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* Trang chủ — public */}
-        <Route path="/" element={<HomePage />} />
+// Packages — import from barrel
+import { LoginPage } from '../packages/auth';
 
-        {/* AI Chatbot — public (không cần đăng nhập để chat cơ bản) */}
-        <Route path="/ai" element={<AiPage />} />
+// Home & AI (existing)
+import { HomePage } from '../packages/home';
+import { AiPage } from '../packages/ai';
 
-        {/* Auth */}
-        <Route path="/login" element={<LoginPage />} />
+// Dashboard / Users (existing)
+import { DashboardPage, UsersPage } from '../packages/user/pages';
 
-        {/* Protected routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute>
-              <UsersPage />
-            </ProtectedRoute>
-          }
-        />
+export const AppRoutes = () => (
+  <BrowserRouter>
+    <Routes>
+      {/* Public */}
+      <Route path="/"       element={<HomePage />} />
+      <Route path="/ai"     element={<AiPage />} />
+      <Route path="/login"  element={<LoginPage />} />
 
-        {/* Catch all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
+      {/* TODO: add /register → RegisterPage from auth package */}
+      <Route path="/register"        element={<Navigate to="/login" replace />} />
+      <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
+
+      {/* Protected */}
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/users"     element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
+
+      {/* Catch-all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  </BrowserRouter>
+);
