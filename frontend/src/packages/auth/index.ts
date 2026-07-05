@@ -11,10 +11,15 @@ export { default as LoginPage } from './pages/LoginPage';
 
 // Components (if needed by other packages — e.g. LoginModal)
 export { LoginForm } from './components/LoginForm';
+export { default as RegisterPage } from './pages/RegisterPage';
 export { BrandPanel } from './components/BrandPanel';
 
 // Hook (for embedding login logic elsewhere)
 export { useLogin } from './hooks/useLogin';
+
+export { default as ForgotPasswordPage } from './pages/ForgotPasswordPage';
+
+export { default as LogoutAllDevicesPage } from './pages/LogoutAllDevicesPage';
 
 // Types
 export type {

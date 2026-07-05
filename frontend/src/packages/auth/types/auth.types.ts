@@ -10,22 +10,35 @@ export interface LoginRequest {
   rememberMe?: boolean;
 }
 
-export interface LoginResponse {
-  user: AuthUser;
-  token: string;
-  refreshToken?: string;
-  expiresIn?: number;
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password: string;
+  phone?: string;
 }
 
-export interface AuthUser {
+export interface UserInfo {
   id: string;
   email: string;
-  name?: string;
-  avatar?: string;
-  role: UserRole;
+  fullName: string;
+  avatarUrl?: string;
+  role: Role;
+  provider: string;
 }
 
-export type UserRole = 'admin' | 'doctor' | 'patient' | 'user';
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  user: UserInfo;
+}
+
+export type LoginResponse = AuthResponse;
+export type RegisterResponse = AuthResponse;
+export type AuthUser = UserInfo;
+
+
+export type Role = 'ADMIN' | 'DOCTOR' | 'PATIENT' | 'BUSINESS' | 'USER';
 
 // --- Form state ---
 export interface LoginFormValues {
@@ -33,7 +46,6 @@ export interface LoginFormValues {
   password: string;
   rememberMe: boolean;
 }
-
 export interface LoginFormErrors {
   email?: string;
   password?: string;
@@ -49,6 +61,37 @@ export interface UseLoginReturn {
   handleChange: (field: keyof LoginFormValues, value: string | boolean) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   clearError: (field: keyof LoginFormErrors) => void;
+}
+
+// --- Register form state ---
+export interface RegisterFormValues {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone: string;      
+  phoneCountry: string;  
+  agreeTerms: boolean;
+}
+
+export interface RegisterFormErrors {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  phone?: string;
+  agreeTerms?: string;
+  form?: string;
+}
+
+export interface UseRegisterReturn {
+  values: RegisterFormValues;
+  errors: RegisterFormErrors;
+  isLoading: boolean;
+  isSuccess: boolean;
+  handleChange: (field: keyof RegisterFormValues, value: string | boolean) => void;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+  clearError: (field: keyof RegisterFormErrors) => void;
 }
 
 // --- Social login ---

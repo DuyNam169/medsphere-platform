@@ -44,12 +44,18 @@ public class SecurityConfig {
             AppConstants.AUTH_BASE + "/register/business",
             AppConstants.AUTH_BASE + "/google-login",
             AppConstants.AUTH_BASE + "/refresh",
+            AppConstants.AUTH_BASE + "/forgot-password/request-otp",
+            AppConstants.AUTH_BASE + "/forgot-password/verify-otp",
+            AppConstants.AUTH_BASE + "/forgot-password/reset",
+            AppConstants.AUTH_BASE + "/forgot-password/**",
+            AppConstants.AUTH_BASE + "/security/logout-all-devices",
     };
 
-    private static final String[] PUBLIC_GET = {
-            "/v1/health",
-            "/actuator/health",
-    };
+        private static final String[] PUBLIC_GET = {
+                "/v1/health",
+                "/actuator/health",
+                AppConstants.GEO_BASE + "/language",
+        };
 
     // ── Filter chain ─────────────────────────────────────────
 

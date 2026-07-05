@@ -11,7 +11,6 @@ import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../../../core/store/authStore';
 import { LoginForm } from '../components/LoginForm';
 import { BrandPanel } from '../components/BrandPanel';
-import { LanguageSwitcher } from '../../../core/components/LanguageSwitcher';
 
 const LoginPage: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
@@ -22,11 +21,6 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="auth-page">
-      {/* Language switcher — top right, always visible */}
-      <div className="auth-lang-switcher">
-        <LanguageSwitcher />
-      </div>
-
       {/* Left: brand panel (tablet+ only) */}
       <aside className="auth-brand-panel">
         <BrandPanel />

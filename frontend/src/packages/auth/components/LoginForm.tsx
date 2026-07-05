@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
 import { AppConfig } from '../../../core/config/app.config';
+import { useGoogleLogin } from '../hooks/useGoogleLogin';
 
 // Google icon SVG (inline, no dependency)
 const GoogleIcon: React.FC = () => (
@@ -40,7 +41,8 @@ export const LoginForm: React.FC = () => {
   const emailId = useId();
   const passwordId = useId();
   const rememberMeId = useId();
-
+  const { triggerGoogleLogin, isLoading: isGoogleLoading } = useGoogleLogin();
+  
   return (
     <div className="login-form-wrapper">
       {/* Mobile-only logo */}
@@ -182,9 +184,16 @@ export const LoginForm: React.FC = () => {
 
         {/* Social buttons */}
         <div className="login-form__social">
-          <button type="button" className="btn-social">
+          <button
+            type="button"
+            onClick={triggerGoogleLogin}
+            disabled={isGoogleLoading}
+            className="btn-social"
+          >
             <GoogleIcon />
-            <span>{t('auth.continueWithGoogle')}</span>
+            <span>
+              {isGoogleLoading ? t('auth.signingIn') : t('auth.continueWithGoogle')}
+            </span>
           </button>
         </div>
 

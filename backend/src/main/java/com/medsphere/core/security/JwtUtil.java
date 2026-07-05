@@ -124,4 +124,22 @@ public class JwtUtil {
     public long getRefreshTokenExpiryMs() {
         return jwtConfig.getRefreshTokenExpiryMs();
     }
+
+    // ── Security action token (dùng cho link "not me" trong email) ──
+
+    public String generateSecurityActionToken(UUID userId) {
+        return buildToken(
+                Map.of("type", "security_action"),
+                userId.toString(),
+                24 * 60 * 60 * 1000L // 24 giờ
+        );
+    }
+
+    public boolean isSecurityActionToken(String token) {
+        return "security_action".equals(extractType(token));
+    }
+
+    public Date extractIssuedAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
+    }
 }

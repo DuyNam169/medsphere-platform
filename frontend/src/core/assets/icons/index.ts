@@ -37,3 +37,4 @@ export { default as IconMemories } from './IconMemories.svg?component';
 export { default as IconSaved } from './IconSaved.svg?component';
 export { default as IconEvents } from './IconEvents.svg?component';
 export { default as IconSettings } from './IconSettings.svg?component';
+export { default as IconLogOut } from './IconLogOut.svg?component';

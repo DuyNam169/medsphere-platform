@@ -1,10 +1,15 @@
 import { create } from 'zustand';
 import { storage, TOKEN_KEY } from '../utils/storage';
 
-interface User {
+const REFRESH_TOKEN_KEY = 'refresh_token';
+
+export interface User {
   id: string;
   email: string;
-  name?: string;
+  fullName: string;
+  avatarUrl?: string;
+  role: 'ADMIN' | 'DOCTOR' | 'PATIENT' | 'BUSINESS' | 'USER';
+  provider: string;
 }
 
 interface AuthState {
@@ -14,7 +19,7 @@ interface AuthState {
   isLoading: boolean;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
-  login: (user: User, token: string) => void;
+  login: (user: User, accessToken: string, refreshToken?: string) => void;
   logout: () => void;
   setLoading: (isLoading: boolean) => void;
 }
@@ -36,17 +41,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token });
   },
 
-  login: (user, token) => {
-    storage.set(TOKEN_KEY, token);
+  login: (user, accessToken, refreshToken) => {
+    storage.set(TOKEN_KEY, accessToken);
+    if (refreshToken) storage.set(REFRESH_TOKEN_KEY, refreshToken);
     set({
       user,
-      token,
+      token: accessToken,
       isAuthenticated: true,
     });
   },
 
   logout: () => {
     storage.remove(TOKEN_KEY);
+    storage.remove(REFRESH_TOKEN_KEY);
     set({
       user: null,
       token: null,

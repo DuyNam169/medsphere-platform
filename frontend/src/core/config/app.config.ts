@@ -5,12 +5,11 @@
 
 export const AppConfig = {
   appName: 'Modular App',
-  // MARK: Đổi tên thương hiệu hiển thị trên giao diện
   brandName: 'Medsphere',
-  // MARK: Tagline cho trang login
   tagline: 'Kết nối cộng đồng y tế',
   logo: '/src/core/assets/logo.svg',
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
   version: '1.0.0',
   defaultLanguage: 'vi',
   supportedLanguages: ['en', 'vi'],
