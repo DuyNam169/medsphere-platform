@@ -9,6 +9,7 @@ public final class AppConstants {
     public static final String USER_BASE     = API_VERSION + "/users";
     public static final String FEED_BASE     = API_VERSION + "/feed";
     public static final String AI_BASE       = API_VERSION + "/ai";
+    public static final String GEO_BASE      = API_VERSION + "/geo";
 
     public static final int    DEFAULT_PAGE_SIZE = 20;
     public static final int    MAX_PAGE_SIZE     = 100;

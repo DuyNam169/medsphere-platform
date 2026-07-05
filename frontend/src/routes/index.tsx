@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 
 // Packages — import from barrel
-import { LoginPage } from '../packages/auth';
+import { LoginPage, RegisterPage, ForgotPasswordPage, LogoutAllDevicesPage } from '../packages/auth';
 
 // Home & AI (existing)
 import { HomePage } from '../packages/home';
@@ -15,6 +15,7 @@ import { AiPage } from '../packages/ai';
 
 // Dashboard / Users (existing)
 import { DashboardPage, UsersPage } from '../packages/user/pages';
+
 
 export const AppRoutes = () => (
   <BrowserRouter>
@@ -25,8 +26,9 @@ export const AppRoutes = () => (
       <Route path="/login"  element={<LoginPage />} />
 
       {/* TODO: add /register → RegisterPage from auth package */}
-      <Route path="/register"        element={<Navigate to="/login" replace />} />
-      <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/security/logout-all-devices" element={<LogoutAllDevicesPage />} />
 
       {/* Protected */}
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

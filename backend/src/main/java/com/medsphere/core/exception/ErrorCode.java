@@ -12,6 +12,11 @@ public enum ErrorCode {
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED,              "auth.token_invalid"),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED,              "auth.token_missing"),
     REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED,      "auth.refresh_token_invalid"),
+    OTP_INVALID(HttpStatus.BAD_REQUEST,                 "auth.otp_invalid"),
+    OTP_EXPIRED(HttpStatus.BAD_REQUEST,                 "auth.otp_expired"),
+    OTP_NOT_VERIFIED(HttpStatus.BAD_REQUEST,            "auth.otp_not_verified"),
+    OTP_RESEND_TOO_SOON(HttpStatus.TOO_MANY_REQUESTS,   "auth.otp_resend_too_soon"),
+    GOOGLE_ACCOUNT_NO_PASSWORD(HttpStatus.BAD_REQUEST,  "auth.google_account_no_password"),
 
     // ── User ─────────────────────────────────────────────────
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,                "user.not_found"),

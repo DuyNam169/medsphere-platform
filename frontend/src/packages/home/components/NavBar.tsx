@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SvgIcon from '../../../core/icons/SvgIcon';
 import { AppConfig } from '../../../core/config/app.config';
+import { useAuthStore } from '../../../core/store/authStore';
 
 interface NavBarProps { onRequireLogin: () => void; }
 type NavTab = 'home' | 'ai' | 'marketplace' | 'groups' | 'gaming';
@@ -14,6 +15,25 @@ const NavBar: React.FC<NavBarProps> = ({ onRequireLogin }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  const { isAuthenticated, user, logout } = useAuthStore();
+
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(e.target as Node)
+      ) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Sync activeTab với route hiện tại
   const getActiveTab = (): NavTab => {
@@ -41,6 +61,20 @@ const NavBar: React.FC<NavBarProps> = ({ onRequireLogin }) => {
     } else {
       soon();
     }
+  };
+
+  const handleAccountClick = () => {
+    if (isAuthenticated) {
+      setProfileMenuOpen((prev) => !prev);
+    } else {
+      onRequireLogin();
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setProfileMenuOpen(false);
+    navigate('/login');
   };
 
   return (
@@ -126,13 +160,60 @@ const NavBar: React.FC<NavBarProps> = ({ onRequireLogin }) => {
             </span>
           </button>
 
-          <button
-            onClick={onRequireLogin}
-            className="w-10 h-10 rounded-full bg-fb-icon-bg hover:bg-fb-bg-pressed flex items-center justify-center transition-colors"
-            title="Account"
-          >
-            <SvgIcon name="IconUser" size={20} color={NAV_ICON_COLOR} />
-          </button>
+          {/* Account button + dropdown */}
+          <div className="relative" ref={profileMenuRef}>
+            <button
+              onClick={handleAccountClick}
+              className="w-10 h-10 rounded-full bg-fb-icon-bg hover:bg-fb-bg-pressed flex items-center justify-center transition-colors overflow-hidden"
+              title="Account"
+            >
+              {isAuthenticated && user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.fullName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <SvgIcon name="IconUser" size={20} color={NAV_ICON_COLOR} />
+              )}
+            </button>
+
+            {profileMenuOpen && isAuthenticated && (
+              <div className="absolute right-0 top-12 w-64 bg-fb-bg-card rounded-xl shadow-lg border border-fb-border py-2 z-50">
+                <div className="flex items-center gap-3 px-4 py-2">
+                  <div className="w-9 h-9 rounded-full bg-fb-icon-bg flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {user?.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.fullName} className="w-full h-full object-cover" />
+                    ) : (
+                      <SvgIcon name="IconUser" size={18} color={NAV_ICON_COLOR} />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-fb-text-primary truncate">
+                      {user?.fullName}
+                    </p>
+                    <p className="text-xs text-fb-text-secondary truncate">
+                      {user?.email}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="my-1 border-t border-fb-border" />
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-fb-bg-hover transition-colors text-left"
+                >
+                  <span className="w-8 h-8 rounded-full bg-fb-icon-bg flex items-center justify-center flex-shrink-0">
+                    <SvgIcon name="IconLogOut" size={16} color={NAV_ICON_COLOR} />
+                  </span>
+                  <span className="text-sm font-medium text-fb-text-primary">
+                    {t('navigation.logout')}
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

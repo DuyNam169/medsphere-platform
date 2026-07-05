@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.medsphere.core.validation.ValidE164Phone;
+
 public final class AuthDtos {
     private AuthDtos() {}
 
@@ -29,11 +31,20 @@ public final class AuthDtos {
     public static class RegisterRequest {
         @NotBlank(message = "Full name is required") @Size(max = 100)
         private String fullName;
-        @NotBlank @Email(message = "Invalid email") @Size(max = 255)
+        @NotBlank
+        @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Invalid email format"
+        )
+        @Size(max = 255)
         private String email;
-        @NotBlank @Size(min = 8, max = 128, message = "Password must be 8-128 chars")
+        @NotBlank
+        @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,128}$",
+            message = "Password must be 8-128 characters and include uppercase, lowercase, number and special character"
+        )
         private String password;
-        @Pattern(regexp = "^(\\+?[0-9]{9,15})?$", message = "Invalid phone")
+        @ValidE164Phone(optional = true, message = "Invalid phone number for the selected country")
         private String phone;
     }
 
@@ -44,11 +55,20 @@ public final class AuthDtos {
         @NotBlank(message = "Full name is required") @Size(max = 100)
         private String fullName;
         @NotBlank(message = "Phone is required")
-        @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Invalid phone")
+        @ValidE164Phone(optional = false, message = "Invalid phone number for the selected country")
         private String phone;
-        @NotBlank @Email(message = "Invalid email") @Size(max = 255)
+        @NotBlank
+        @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Invalid email format"
+        )
+        @Size(max = 255)
         private String email;
-        @NotBlank @Size(min = 8, max = 128, message = "Password must be 8-128 chars")
+        @NotBlank
+        @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,128}$",
+            message = "Password must be 8-128 characters and include uppercase, lowercase, number and special character"
+        )
         private String password;
 
         @NotBlank(message = "Specialty is required") @Size(max = 100)
@@ -76,11 +96,20 @@ public final class AuthDtos {
         @NotBlank(message = "Contact name is required") @Size(max = 100)
         private String contactName;
         @NotBlank(message = "Phone is required")
-        @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Invalid phone")
+        @ValidE164Phone(optional = false, message = "Invalid phone number for the selected country")
         private String phone;
-        @NotBlank @Email(message = "Invalid email") @Size(max = 255)
+        @NotBlank
+        @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Invalid email format"
+        )
+        @Size(max = 255)
         private String email;
-        @NotBlank @Size(min = 8, max = 128, message = "Password must be 8-128 chars")
+        @NotBlank
+        @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,128}$",
+            message = "Password must be 8-128 characters and include uppercase, lowercase, number and special character"
+        )
         private String password;
 
         @NotBlank(message = "Business name is required") @Size(max = 255)

@@ -47,6 +47,7 @@ import _IconGoogle from '../../packages/auth/assets/icons/IconGoogle.svg?compone
 import _IconMail   from '../../packages/auth/assets/icons/IconMail.svg?component';
 import _IconPhone  from '../../packages/auth/assets/icons/IconPhone.svg?component';
 import _IconShield from '../../packages/auth/assets/icons/IconShield.svg?component';
+import _IconLogOut from '../assets/icons/IconLogOut.svg?component';
 
 // ── Wrap với tên PascalCase để React không warn casing ────
 // React xác định component qua tên biến — đặt đúng PascalCase
@@ -89,6 +90,7 @@ const IconGoogle:           React.FC<React.SVGProps<SVGSVGElement>> = (p) => <_I
 const IconMail:             React.FC<React.SVGProps<SVGSVGElement>> = (p) => <_IconMail {...p} />;
 const IconPhone:            React.FC<React.SVGProps<SVGSVGElement>> = (p) => <_IconPhone {...p} />;
 const IconShield:           React.FC<React.SVGProps<SVGSVGElement>> = (p) => <_IconShield {...p} />;
+const IconLogOut: React.FC<React.SVGProps<SVGSVGElement>> = (p) => <_IconLogOut {...p} />;
 
 // ── Icon registry ─────────────────────────────────────────
 const ICON_MAP = {
@@ -130,6 +132,7 @@ const ICON_MAP = {
   IconMail,
   IconPhone,
   IconShield,
+  IconLogOut,
 } as const;
 
 export type IconName = keyof typeof ICON_MAP;
