@@ -5,6 +5,7 @@ import { useRegister } from '../hooks/useRegister';
 import { AppConfig } from '../../../core/config/app.config';
 import { useGoogleLogin } from '../hooks/useGoogleLogin';
 import { PhoneInput } from '../../../core/components/PhoneInput';
+import { Spinner } from '../../../core/components/Spinner';
 
 const GoogleIcon: React.FC = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
@@ -204,7 +205,7 @@ export const RegisterForm: React.FC = () => {
           >
             {isLoading ? (
               <>
-                <span className="btn-primary__spinner" aria-hidden="true" />
+                <Spinner size={16} color="#fff" />
                 {t('auth.registering')}
               </>
             ) : isSuccess ? (
@@ -231,7 +232,7 @@ export const RegisterForm: React.FC = () => {
             disabled={isGoogleLoading}
             className="btn-social"
             >
-            <GoogleIcon />
+            {isGoogleLoading ? <Spinner size={16} color="#65676B" /> : <GoogleIcon />}
             <span>
                 {isGoogleLoading ? t('auth.signingIn') : t('auth.continueWithGoogle')}
             </span>

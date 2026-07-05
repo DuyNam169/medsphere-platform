@@ -30,13 +30,26 @@ class ApiService {
       }
     );
 
-    this.client.interceptors.response.use(
+  this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response?.status === 401) {
+        const requestUrl: string = error.config?.url ?? '';
+
+        // Các endpoint public: gọi khi CHƯA đăng nhập, nên lỗi 401 ở đây
+        // nghĩa là "sai thông tin", KHÔNG phải "phiên hết hạn".
+        // Không được tự động redirect / xóa token trong các trường hợp này.
+        const isPublicAuthEndpoint =
+          requestUrl.includes('/v1/auth/login') ||
+          requestUrl.includes('/v1/auth/register') ||
+          requestUrl.includes('/v1/auth/google-login') ||
+          requestUrl.includes('/v1/auth/refresh') ||
+          requestUrl.includes('/v1/auth/forgot-password');
+
+        if (error.response?.status === 401 && !isPublicAuthEndpoint) {
           storage.remove(TOKEN_KEY);
           window.location.href = '/login';
         }
+
         return Promise.reject(error);
       }
     );

@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
 import { AppConfig } from '../../../core/config/app.config';
 import { useGoogleLogin } from '../hooks/useGoogleLogin';
+import { Spinner } from '../../../core/components/Spinner';
 
 // Google icon SVG (inline, no dependency)
 const GoogleIcon: React.FC = () => (
@@ -159,7 +160,7 @@ export const LoginForm: React.FC = () => {
           >
             {isLoading ? (
               <>
-                <span className="btn-primary__spinner" aria-hidden="true" />
+                <Spinner size={16} color="#fff" />
                 {t('auth.signingIn')}
               </>
             ) : isSuccess ? (
@@ -190,7 +191,7 @@ export const LoginForm: React.FC = () => {
             disabled={isGoogleLoading}
             className="btn-social"
           >
-            <GoogleIcon />
+            {isGoogleLoading ? <Spinner size={16} color="#65676B" /> : <GoogleIcon />}
             <span>
               {isGoogleLoading ? t('auth.signingIn') : t('auth.continueWithGoogle')}
             </span>

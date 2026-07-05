@@ -28,7 +28,6 @@ import com.medsphere.modules.mail.template.OtpResetPasswordEmailBuilder;
 import com.medsphere.modules.mail.template.WelcomeEmailBuilder;
 import com.medsphere.modules.mail.template.LoginNotificationEmailBuilder;
 import com.medsphere.modules.mail.template.PasswordChangedEmailBuilder;
-import com.medsphere.modules.auth.dto.ForgotPasswordDtos;
 import java.time.Instant;
 
 import java.time.Duration;
@@ -84,8 +83,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String notMeUrl = buildSecurityActionUrl(user.getId());
+        String effectiveLanguage = resolveEffectiveLanguage(user, language);
         var built = loginNotificationEmailBuilder.build(
-                user.getFullName(), clientIp, userAgent, Instant.now(), notMeUrl, language);
+                user.getFullName(), clientIp, userAgent, Instant.now(), notMeUrl, effectiveLanguage);
         mailService.sendHtml(user.getEmail(), built.subject(), built.html());
 
         return buildAuthResponse(user);
@@ -105,12 +105,13 @@ public class AuthServiceImpl implements AuthService {
                 .phone(request.getPhone())
                 .provider(AuthProvider.LOCAL)
                 .role(Role.USER)
+                .preferredLanguage(language)
                 .build();
 
         userRepository.save(user);
         log.info("Registered new USER: {}", user.getEmail());
 
-        var built = welcomeEmailBuilder.build(user.getFullName(), language);
+        var built = welcomeEmailBuilder.build(user.getFullName(), user.getPreferredLanguage());
         mailService.sendHtml(user.getEmail(), built.subject(), built.html());
 
         return buildAuthResponse(user);
@@ -133,6 +134,7 @@ public class AuthServiceImpl implements AuthService {
                 .phone(request.getPhone())
                 .provider(AuthProvider.LOCAL)
                 .role(Role.DOCTOR)
+                .preferredLanguage(language)
                 .build();
         user = userRepository.save(user);
 
@@ -151,7 +153,7 @@ public class AuthServiceImpl implements AuthService {
 
         log.info("Registered new DOCTOR (pending approval): {}", user.getEmail());
 
-        var built = welcomeEmailBuilder.build(user.getFullName(), language);
+        var built = welcomeEmailBuilder.build(user.getFullName(), user.getPreferredLanguage());
         mailService.sendHtml(user.getEmail(), built.subject(), built.html());
 
         return buildAuthResponse(user);
@@ -174,6 +176,7 @@ public class AuthServiceImpl implements AuthService {
                 .phone(request.getPhone())
                 .provider(AuthProvider.LOCAL)
                 .role(Role.BUSINESS)
+                .preferredLanguage(language)
                 .build();
         user = userRepository.save(user);
 
@@ -311,6 +314,17 @@ public class AuthServiceImpl implements AuthService {
 
     // ── Helpers ───────────────────────────────────────────────
 
+    /**
+     * Ưu tiên ngôn ngữ đã lưu trong tài khoản (do user chọn hoặc detect lúc đăng ký).
+     * Chỉ dùng ngôn ngữ detect theo IP tại thời điểm hiện tại làm phương án dự phòng
+     * khi user chưa từng có preferredLanguage (ví dụ tài khoản tạo trước khi có tính năng này).
+     */
+    private String resolveEffectiveLanguage(User user, String ipDetectedLanguage) {
+        return (user.getPreferredLanguage() != null && !user.getPreferredLanguage().isBlank())
+                ? user.getPreferredLanguage()
+                : ipDetectedLanguage;
+    }
+
     private void validateEmailAndPhoneUnique(String email, String phone) {
         if (userRepository.existsByEmail(email)) {
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
@@ -370,7 +384,8 @@ public class AuthServiceImpl implements AuthService {
                 redisTemplate.opsForValue().set(OTP_CODE_PREFIX + email, otp, OTP_TTL);
                 redisTemplate.opsForValue().set(OTP_COOLDOWN_PREFIX + email, "1", OTP_COOLDOWN_TTL);
 
-                var built = otpEmailBuilder.build(otp, language);
+                String effectiveLanguage = resolveEffectiveLanguage(user, language);
+                var built = otpEmailBuilder.build(otp, effectiveLanguage);
                 mailService.sendHtml(email, built.subject(), built.html());
             }
         }, () -> {
@@ -423,8 +438,9 @@ public class AuthServiceImpl implements AuthService {
         redisTemplate.delete(OTP_VERIFIED_PREFIX + email);
 
         String notMeUrl = buildSecurityActionUrl(user.getId());
+        String effectiveLanguage = resolveEffectiveLanguage(user, language);
         var built = passwordChangedEmailBuilder.build(
-                user.getFullName(), clientIp, Instant.now(), notMeUrl, language);
+                user.getFullName(), clientIp, Instant.now(), notMeUrl, effectiveLanguage);
         mailService.sendHtml(user.getEmail(), built.subject(), built.html());
 
         log.info("Password reset successful for: {}", email);

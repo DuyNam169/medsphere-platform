@@ -12,7 +12,6 @@ import com.medsphere.core.web.RequestIpUtils;
 import com.medsphere.modules.auth.dto.ForgotPasswordDtos;
 import com.medsphere.modules.mail.service.MailLanguageService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.UUID;
 

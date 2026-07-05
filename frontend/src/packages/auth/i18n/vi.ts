@@ -7,7 +7,7 @@ const authVi = {
   auth: {
     // --- Page meta ---
     pageTitle: 'Đăng nhập Medsphere',
-    pageSubtitle: 'Cộng đồng y tế của bạn, tất cả trong một nơi.',
+    pageSubtitle: 'Đặt lịch khám và cập nhật tin y tế, tất cả trong một nơi.',
 
     // --- Form labels ---
     emailOrPhone: 'Email hoặc số điện thoại',
@@ -53,13 +53,13 @@ const authVi = {
     backToHome: 'Về trang chủ',
 
     // --- Brand copy ---
-    brandTagline: 'Kết nối. Chia sẻ. Chữa lành cùng nhau.',
-    featureHealth: 'Tin tức & cộng đồng y tế',
-    featureAI: 'Trợ lý AI y khoa',
-    featureConnect: 'Kết nối với bác sĩ',
+    brandTagline: 'Đặt lịch khám dễ dàng. Cập nhật tin y khoa mỗi ngày.',
+    featureHealth: 'Tin tức & kiến thức y khoa',
+    featureAI: '24/7 trợ lý AI hỗ trợ sức khỏe',
+    featureConnect: 'Đặt lịch khám nhanh chóng',
 
     registerPageTitle: 'Tạo tài khoản Medsphere',
-    registerPageSubtitle: 'Tham gia cộng đồng Medsphere ngay hôm nay.',
+    registerPageSubtitle: 'Tham gia Medsphere ngay hôm nay.',
     fullName: 'Họ và tên',
     fullNamePlaceholder: 'Nhập họ và tên của bạn',
     phone: 'Số điện thoại (không bắt buộc)',
