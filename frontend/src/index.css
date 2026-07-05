@@ -45,3 +45,19 @@ body {
 
 /* Smooth all transitions */
 button, a { transition-property: background-color, color, opacity, transform; transition-duration: 150ms; }
+
+@keyframes route-loading-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.route-loading-bar__inner {
+  animation: route-loading-slide 1.1s ease-in-out infinite;
+}

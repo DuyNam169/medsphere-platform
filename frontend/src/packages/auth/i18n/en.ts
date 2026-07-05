@@ -8,7 +8,7 @@ const authEn = {
   auth: {
     // --- Page meta ---
     pageTitle: 'Sign in to Medsphere',
-    pageSubtitle: 'Your medical community, all in one place.',
+    pageSubtitle: 'Book appointments and stay informed, all in one place.',
 
     // --- Form labels ---
     emailOrPhone: 'Email or phone number',
@@ -53,11 +53,11 @@ const authEn = {
     signUp: 'Sign up',
     backToHome: 'Back to home',
 
-    // --- Brand copy ---
-    brandTagline: 'Connect. Share. Heal together.',
-    featureHealth: 'Health news & community',
-    featureAI: 'AI medical assistant',
-    featureConnect: 'Connect with doctors',
+  // --- Brand copy ---
+    brandTagline: 'Book appointments easily. Stay updated with medical news.',
+    featureHealth: 'Medical news & insights',
+    featureAI: '24/7 AI health assistant',
+    featureConnect: 'Quick appointment booking',
 
     registerPageTitle: 'Create your account',
     registerPageSubtitle: 'Join the Medsphere community today.',

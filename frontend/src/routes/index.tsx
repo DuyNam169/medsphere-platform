@@ -12,6 +12,7 @@ import { LoginPage, RegisterPage, ForgotPasswordPage, LogoutAllDevicesPage } fro
 // Home & AI (existing)
 import { HomePage } from '../packages/home';
 import { AiPage } from '../packages/ai';
+import { RouteLoadingBar } from '../core/components';
 
 // Dashboard / Users (existing)
 import { DashboardPage, UsersPage } from '../packages/user/pages';
@@ -19,6 +20,7 @@ import { DashboardPage, UsersPage } from '../packages/user/pages';
 
 export const AppRoutes = () => (
   <BrowserRouter>
+  <RouteLoadingBar />
     <Routes>
       {/* Public */}
       <Route path="/"       element={<HomePage />} />

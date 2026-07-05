@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useForgotPassword } from '../hooks/useForgotPassword';
 import { OtpInput } from './OtpInput';
 import { AppConfig } from '../../../core/config/app.config';
+import { Spinner } from '../../../core/components/Spinner';
 
 export const ForgotPasswordForm: React.FC = () => {
   const { t } = useTranslation();
@@ -63,7 +64,7 @@ export const ForgotPasswordForm: React.FC = () => {
               >
                 {fp.isLoading ? (
                   <>
-                    <span className="btn-primary__spinner" aria-hidden="true" />
+                    <Spinner size={16} color="#fff" />
                     {t('auth.sendingCode')}
                   </>
                 ) : (
@@ -115,14 +116,21 @@ export const ForgotPasswordForm: React.FC = () => {
                 )}
 
                 {!fp.isOtpVerified ? (
-                  <button
+                <button
                     type="button"
                     onClick={fp.handleVerifyOtp}
                     disabled={fp.isVerifying || fp.otp.length !== 6}
                     className="btn-social"
                     style={{ marginTop: '0.625rem' }}
                   >
-                    {fp.isVerifying ? t('auth.verifyingCode') : t('auth.verifyCode')}
+                    {fp.isVerifying ? (
+                      <>
+                        <Spinner size={16} color="#65676B" />
+                        {t('auth.verifyingCode')}
+                      </>
+                    ) : (
+                      t('auth.verifyCode')
+                    )}
                   </button>
                 ) : (
                   <div className="login-form__success" style={{ marginTop: '0.625rem' }}>
@@ -203,7 +211,7 @@ export const ForgotPasswordForm: React.FC = () => {
                   >
                     {fp.isResetting ? (
                       <>
-                        <span className="btn-primary__spinner" aria-hidden="true" />
+                        <Spinner size={16} color="#fff" />
                         {t('auth.resettingPassword')}
                       </>
                     ) : fp.isSuccess ? (

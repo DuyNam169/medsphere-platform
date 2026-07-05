@@ -64,6 +64,9 @@ public class User extends BaseEntity implements UserDetails {
     @Builder.Default
     private boolean accountNonLocked = true;
 
+    @Column(name = "preferred_language", length = 5)
+    private String preferredLanguage;
+
     // ── UserDetails ───────────────────────────────────────────
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
