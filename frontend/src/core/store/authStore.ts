@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { storage, TOKEN_KEY } from '../utils/storage';
+import { apiService } from '../services/api';
 
 const REFRESH_TOKEN_KEY = 'refresh_token';
 
@@ -22,6 +23,8 @@ interface AuthState {
   login: (user: User, accessToken: string, refreshToken?: string) => void;
   logout: () => void;
   setLoading: (isLoading: boolean) => void;
+  /** Gọi lúc app khởi động — khôi phục thông tin user từ token đã lưu (nếu có). */
+  hydrateUser: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -62,4 +65,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   setLoading: (isLoading) => set({ isLoading }),
+
+  hydrateUser: async () => {
+    const token = storage.get(TOKEN_KEY);
+    if (!token) return;
+
+    try {
+      const userInfo = await apiService.get<User>('/v1/auth/me');
+      set({ user: userInfo, isAuthenticated: true });
+    } catch {
+      // Token hỏng/hết hạn — dọn sạch trạng thái đăng nhập
+      storage.remove(TOKEN_KEY);
+      storage.remove(REFRESH_TOKEN_KEY);
+      set({ user: null, token: null, isAuthenticated: false });
+    }
+  },
 }));

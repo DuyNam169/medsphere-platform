@@ -13,6 +13,7 @@ public interface AuthService {
     AuthDtos.TokenResponse refreshToken(AuthDtos.RefreshTokenRequest request);
     void                   logout(String refreshToken);
     AuthDtos.AuthResponse  upgradeToPatient(UUID userId, AuthDtos.PatientUpgradeRequest request);
+    AuthDtos.UserInfo getCurrentUser(UUID userId);
     void requestPasswordResetOtp(com.medsphere.modules.auth.dto.ForgotPasswordDtos.RequestOtpRequest request, String language);
     void verifyPasswordResetOtp(com.medsphere.modules.auth.dto.ForgotPasswordDtos.VerifyOtpRequest request);
     void resetPassword(com.medsphere.modules.auth.dto.ForgotPasswordDtos.ResetPasswordRequest request, String clientIp, String language);

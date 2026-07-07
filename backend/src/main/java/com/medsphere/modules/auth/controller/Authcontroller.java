@@ -121,4 +121,9 @@ public class AuthController {
         authService.logoutAllDevices(token);
         return ApiResponse.success();
     }
+
+    @GetMapping("/me")
+    public ApiResponse<AuthDtos.UserInfo> me(@AuthenticationPrincipal String userId) {
+        return ApiResponse.success(authService.getCurrentUser(UUID.fromString(userId)));
+    }
 }

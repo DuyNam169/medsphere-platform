@@ -1,6 +1,6 @@
 // ============================================================
-// AiChatHeader.tsx — src/modules/ai/components/AiChatHeader.tsx
-// Header vùng chat: logo AI, tên, trạng thái, actions
+// AiChatHeader.tsx — src/packages/ai/components/AiChatHeader.tsx
+// Header gọn của vùng chat — tự nhận biết trạng thái đăng nhập.
 // ============================================================
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,66 +10,46 @@ interface AiChatHeaderProps {
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
   onRequireLogin: () => void;
+  isAuthenticated: boolean;
 }
 
 const AiChatHeader: React.FC<AiChatHeaderProps> = ({
   sidebarOpen,
   onToggleSidebar,
   onRequireLogin,
+  isAuthenticated,
 }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex-shrink-0 px-4 py-3 border-b border-fb-border bg-fb-bg-card flex items-center gap-3">
-      {/* Mobile: hamburger toggle */}
+    <div className="ai-chat-header">
       <button
+        className="ai-icon-btn"
         onClick={onToggleSidebar}
-        className="md:hidden w-9 h-9 rounded-full hover:bg-fb-bg-hover flex items-center justify-center text-fb-text-secondary transition-colors"
         title={sidebarOpen ? t('ai.closeSidebar') : t('ai.openSidebar')}
       >
-        <SvgIcon name="IconMenu" size={20} color="currentColor" />
+        <SvgIcon name={sidebarOpen ? 'IconChevronLeft' : 'IconChevronRight'} size={16} color="currentColor" />
       </button>
 
-      {/* Desktop: open sidebar arrow (chỉ hiện khi sidebar đóng) */}
-      {!sidebarOpen && (
-        <button
-          onClick={onToggleSidebar}
-          className="hidden md:flex w-8 h-8 rounded-full hover:bg-fb-bg-hover items-center justify-center text-fb-text-secondary transition-colors"
-          title={t('ai.openSidebar')}
-        >
-          <SvgIcon name="IconChevronRight" size={18} color="currentColor" />
-        </button>
-      )}
-
-      {/* AI avatar */}
-      <div className="w-9 h-9 rounded-full bg-fb-primary flex items-center justify-center flex-shrink-0">
-        <SvgIcon name="IconAI" size={20} color="white" />
+      <div className="ai-chat-header__avatar">
+        <SvgIcon name="IconAI" size={18} color="white" />
       </div>
 
-      {/* Name + status */}
       <div>
-        <h3 className="text-sm font-semibold text-fb-text">{t('ai.assistantName')}</h3>
-        <p className="text-xs text-green-600 flex items-center gap-1">
-          <SvgIcon name="IconOnlineDot" size={8} color="#31A24C" />
+        <div className="ai-chat-header__name">{t('ai.assistantName')}</div>
+        <div className="ai-chat-header__status">
+          <span className="ai-chat-header__dot" />
           {t('ai.online')}
-        </p>
+        </div>
       </div>
 
-      {/* Actions — cần đăng nhập */}
-      <div className="ml-auto flex items-center gap-1">
+      <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.25rem' }}>
         <button
-          onClick={onRequireLogin}
-          className="w-9 h-9 rounded-full hover:bg-fb-bg-hover flex items-center justify-center text-fb-text-secondary transition-colors"
-          title={t('ai.shareLockedTooltip')}
+          className="ai-icon-btn"
+          onClick={isAuthenticated ? undefined : onRequireLogin}
+          title={isAuthenticated ? t('ai.share') : t('ai.shareLockedTooltip')}
         >
-          <SvgIcon name="IconShare" size={18} color="currentColor" />
-        </button>
-        <button
-          onClick={onRequireLogin}
-          className="w-9 h-9 rounded-full hover:bg-fb-bg-hover flex items-center justify-center text-fb-text-secondary transition-colors"
-          title={t('ai.moreLockedTooltip')}
-        >
-          <SvgIcon name="IconMoreHoriz" size={18} color="currentColor" />
+          <SvgIcon name="IconShare" size={16} color="currentColor" />
         </button>
       </div>
     </div>

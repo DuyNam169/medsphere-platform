@@ -139,25 +139,29 @@ const NavBar: React.FC<NavBarProps> = ({ onRequireLogin }) => {
           </button>
 
           <button
-            onClick={onRequireLogin}
+            onClick={isAuthenticated ? soon : onRequireLogin}
             className="relative w-10 h-10 rounded-full bg-fb-icon-bg hover:bg-fb-bg-pressed flex items-center justify-center transition-colors"
             title="Messenger"
           >
             <SvgIcon name="IconMessenger" size={20} color={NAV_ICON_COLOR} />
-            <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-fb-badge text-white rounded-full text-[10px] font-bold flex items-center justify-center px-0.5">
-              3
-            </span>
+            {isAuthenticated && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-fb-badge text-white rounded-full text-[10px] font-bold flex items-center justify-center px-0.5">
+                3
+              </span>
+            )}
           </button>
 
           <button
-            onClick={onRequireLogin}
+            onClick={isAuthenticated ? soon : onRequireLogin}
             className="relative w-10 h-10 rounded-full bg-fb-icon-bg hover:bg-fb-bg-pressed flex items-center justify-center transition-colors"
             title="Notifications"
           >
             <SvgIcon name="IconBell" size={20} color={NAV_ICON_COLOR} />
-            <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-fb-badge text-white rounded-full text-[10px] font-bold flex items-center justify-center px-0.5">
-              9+
-            </span>
+            {isAuthenticated && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-fb-badge text-white rounded-full text-[10px] font-bold flex items-center justify-center px-0.5">
+                9+
+              </span>
+            )}
           </button>
 
           {/* Account button + dropdown */}
