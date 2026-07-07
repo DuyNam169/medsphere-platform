@@ -23,7 +23,7 @@ export const AppRoutes = () => (
   <RouteLoadingBar />
     <Routes>
       {/* Public */}
-      <Route path="/"       element={<HomePage />} />
+      <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
       <Route path="/ai"     element={<AiPage />} />
       <Route path="/login"  element={<LoginPage />} />
 

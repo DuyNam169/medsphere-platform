@@ -1,44 +1,36 @@
 // ============================================================
-// AiMessageBubble.tsx — src/modules/ai/components/AiMessageBubble.tsx
-// Từng bubble tin nhắn: user (navy) hoặc AI (gray bg)
+// AiMessageBubble.tsx — src/packages/ai/components/AiMessageBubble.tsx
+// Bong bóng tin nhắn — dùng bảng màu Medsphere (navy/trắng).
 // ============================================================
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SvgIcon from '../../../core/icons/SvgIcon';
+import { useToastStore } from '../../../core/store/toastStore';
 
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  feedback?: 'up' | 'down' | null;
 }
 
 interface AiMessageBubbleProps {
   message: Message;
+  onFeedback?: (messageId: string, feedback: 'up' | 'down') => void;
 }
 
-// Render markdown đơn giản: **bold**, - bullet, 1. numbered, \n line break
 const renderContent = (content: string): React.ReactNode[] => {
   return content.split('\n').map((line, i) => {
-    // Xử lý bold **text**
     const parts = line.split(/\*\*(.*?)\*\*/g).map((part, j) =>
       j % 2 === 1 ? <strong key={j}>{part}</strong> : part
     );
 
     if (line.startsWith('- ')) {
       return (
-        <p key={i} className="ml-4">
+        <p key={i}>
           {'• '}
           {line.slice(2).split(/\*\*(.*?)\*\*/g).map((part, j) =>
-            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
-          )}
-        </p>
-      );
-    }
-    if (/^\d+\.\s/.test(line)) {
-      return (
-        <p key={i} className="ml-4">
-          {line.split(/\*\*(.*?)\*\*/g).map((part, j) =>
             j % 2 === 1 ? <strong key={j}>{part}</strong> : part
           )}
         </p>
@@ -52,78 +44,92 @@ const renderContent = (content: string): React.ReactNode[] => {
 const formatTime = (date: Date): string =>
   date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
-const AiMessageBubble: React.FC<AiMessageBubbleProps> = ({ message }) => {
+const AiMessageBubble: React.FC<AiMessageBubbleProps> = ({ message, onFeedback }) => {
   const { t } = useTranslation();
+  const showToast = useToastStore((s) => s.show);
   const isUser = message.role === 'user';
+  const [localFeedback, setLocalFeedback] = useState<'up' | 'down' | null>(message.feedback ?? null);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      showToast(t('ai.copiedToast'), 'success');
+    } catch {
+      showToast(t('ai.copyFailedToast'), 'error');
+    }
+  };
+
+  const handleFeedback = (value: 'up' | 'down') => {
+    if (localFeedback === value) return; // đã chọn rồi, không lặp lại
+    setLocalFeedback(value);
+    onFeedback?.(message.id, value);
+    showToast(
+      value === 'up' ? t('ai.feedbackHelpfulToast') : t('ai.feedbackNotHelpfulToast'),
+      'success'
+    );
+  };
 
   return (
-    <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      {/* AI avatar — chỉ hiện với tin AI */}
+    <div className={`ai-bubble-row ${isUser ? 'ai-bubble-row--user' : ''}`}>
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-fb-primary flex items-center justify-center flex-shrink-0 mt-1">
-          <SvgIcon name="IconAI" size={16} color="white" />
+        <div className="ai-bubble-avatar">
+          <SvgIcon name="IconAI" size={15} color="white" />
         </div>
       )}
 
-      {/* Bubble + actions */}
-      <div className={`max-w-[75%] flex flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        {/* Tên người gửi */}
-        {!isUser && (
-          <span className="text-xs font-semibold text-fb-text-secondary px-1">
-            {t('ai.assistantName')}
-          </span>
-        )}
+      <div className={`ai-bubble-col ${isUser ? 'ai-bubble-col--user' : ''}`}>
+        {!isUser && <span className="ai-bubble-name">{t('ai.assistantName')}</span>}
 
-        {/* Nội dung bubble */}
-        <div
-          className={`
-            px-4 py-3 rounded-2xl text-sm leading-relaxed
-            ${isUser
-              ? 'bg-fb-primary text-white rounded-br-sm'
-              : 'bg-fb-bg-page text-fb-text rounded-bl-sm border border-fb-border'
-            }
-          `}
-        >
-          <div className="space-y-1">
-            {renderContent(message.content)}
-          </div>
+        <div className={`ai-bubble ${isUser ? 'ai-bubble--user' : 'ai-bubble--assistant'}`}>
+          {renderContent(message.content)}
         </div>
 
-        {/* Timestamp + actions */}
-        <div className={`flex items-center gap-2 px-1 ${isUser ? 'flex-row-reverse' : ''}`}>
-          <span className="text-[10px] text-fb-text-secondary">{formatTime(message.timestamp)}</span>
+        <div className={`ai-bubble-meta ${isUser ? 'ai-bubble-meta--user' : ''}`}>
+          <span className="ai-bubble-time">{formatTime(message.timestamp)}</span>
 
-          {/* Actions chỉ hiện với tin AI */}
           {!isUser && (
-            <div className="flex items-center gap-0.5">
+            <div className="ai-bubble-actions">
               <button
-                onClick={() => navigator.clipboard?.writeText(message.content)}
-                className="w-6 h-6 rounded flex items-center justify-center text-fb-text-secondary hover:text-fb-primary hover:bg-fb-bg-hover transition-colors"
+                onClick={handleCopy}
+                className="ai-bubble-action-btn"
                 title={t('ai.copy')}
               >
                 <SvgIcon name="IconCopy" size={12} color="currentColor" />
               </button>
               <button
-                className="w-6 h-6 rounded flex items-center justify-center text-fb-text-secondary hover:text-green-600 hover:bg-fb-bg-hover transition-colors"
+                onClick={() => handleFeedback('up')}
+                className="ai-bubble-action-btn"
                 title={t('ai.helpful')}
+                style={{ opacity: localFeedback === 'down' ? 0.35 : 1 }}
+                disabled={localFeedback === 'down'}
               >
-                <SvgIcon name="IconThumbUp" size={12} color="currentColor" />
+                <SvgIcon
+                  name="IconThumbUp"
+                  size={12}
+                  color={localFeedback === 'up' ? '#0f6e56' : 'currentColor'}
+                />
               </button>
               <button
-                className="w-6 h-6 rounded flex items-center justify-center text-fb-text-secondary hover:text-red-500 hover:bg-fb-bg-hover transition-colors"
+                onClick={() => handleFeedback('down')}
+                className="ai-bubble-action-btn"
                 title={t('ai.notHelpful')}
+                style={{ opacity: localFeedback === 'up' ? 0.35 : 1 }}
+                disabled={localFeedback === 'up'}
               >
-                <SvgIcon name="IconThumbDown" size={12} color="currentColor" />
+                <SvgIcon
+                  name="IconThumbDown"
+                  size={12}
+                  color={localFeedback === 'down' ? '#993c1d' : 'currentColor'}
+                />
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* User avatar — chỉ hiện với tin user */}
       {isUser && (
-        <div className="w-8 h-8 rounded-full bg-fb-bg-hover-dark flex items-center justify-center flex-shrink-0 mt-1">
-          <SvgIcon name="IconUser" size={18} color="currentColor" className="text-fb-text-secondary" />
+        <div className="ai-bubble-avatar ai-bubble-avatar--user">
+          <SvgIcon name="IconUser" size={16} color="currentColor" />
         </div>
       )}
     </div>

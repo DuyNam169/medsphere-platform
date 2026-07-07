@@ -343,15 +343,27 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(access)
                 .refreshToken(refresh)
                 .expiresIn(jwtConfig.getAccessTokenExpiryMs() / 1000)
-                .user(AuthDtos.UserInfo.builder()
-                        .id(user.getId())
-                        .email(user.getEmail())
-                        .fullName(user.getFullName())
-                        .avatarUrl(user.getAvatarUrl())
-                        .role(user.getRole())
-                        .provider(user.getProvider().name())
-                        .build())
+                .user(buildUserInfo(user))
                 .build();
+    }
+
+    private AuthDtos.UserInfo buildUserInfo(User user) {
+        return AuthDtos.UserInfo.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .avatarUrl(user.getAvatarUrl())
+                .role(user.getRole())
+                .provider(user.getProvider().name())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AuthDtos.UserInfo getCurrentUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return buildUserInfo(user);
     }
 
     private void blacklist(String token) {

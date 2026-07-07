@@ -16,6 +16,8 @@ import coreVi from './locales/vi.json';
 // Package translations — import and merge
 import authEn from '../../packages/auth/i18n/en';
 import authVi from '../../packages/auth/i18n/vi';
+import aiEn from '../../packages/ai/i18n/en';
+import aiVi from '../../packages/ai/i18n/vi';
 
 export const LANGUAGE_STORAGE_KEY = 'app_language';
 
@@ -24,10 +26,10 @@ const merge = (...sources: object[]) => Object.assign({}, ...sources);
 
 const resources = {
   en: {
-    translation: merge(coreEn, authEn),
+    translation: merge(coreEn, authEn, aiEn),
   },
   vi: {
-    translation: merge(coreVi, authVi),
+    translation: merge(coreVi, authVi, aiVi),
   },
 };
 
