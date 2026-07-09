@@ -12,12 +12,17 @@ import com.medsphere.modules.ai.repository.ConversationRepository;
 import com.medsphere.modules.auth.entity.User;
 import com.medsphere.modules.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -27,6 +32,10 @@ public class ChatServiceImpl implements ChatService {
     private final ConversationRepository conversationRepository;
     private final ChatMessageRepository  chatMessageRepository;
     private final UserRepository         userRepository;
+    private final RestTemplate           aiServiceRestTemplate;
+
+    @Value("${app.ai-service-url}")
+    private String aiServiceUrl;
 
     @Override
     @Transactional(readOnly = true)
@@ -73,11 +82,10 @@ public class ChatServiceImpl implements ChatService {
                 .build();
         message = chatMessageRepository.save(message);
 
-        // Tự đặt tiêu đề hội thoại từ tin nhắn đầu tiên của user (nếu chưa có title)
         if (role == MessageRole.USER && (conversation.getTitle() == null || conversation.getTitle().isBlank())) {
             conversation.setTitle(truncateTitle(request.getContent()));
         }
-        conversationRepository.save(conversation); // cập nhật updatedAt để sắp xếp "gần đây" đúng
+        conversationRepository.save(conversation);
 
         return toMessageResponse(message);
     }
@@ -101,7 +109,100 @@ public class ChatServiceImpl implements ChatService {
         conversationRepository.delete(conversation);
     }
 
+    @Override
+    @Transactional
+    public ChatDtos.ChatReplyResponse chat(
+            UUID userId, UUID conversationId, ChatDtos.SendChatMessageRequest request) {
+
+        Conversation conversation = findOwnedConversation(userId, conversationId);
+
+        // Lịch sử hội thoại TRƯỚC khi thêm tin nhắn mới này — dùng làm "history"
+        // gửi cho ai-service, để tin nhắn hiện tại không bị lặp lại 2 lần.
+        List<ChatDtos.AiHistoryItem> history = conversation.getMessages().stream()
+                .map(m -> ChatDtos.AiHistoryItem.builder()
+                        .role(m.getRole().name().toLowerCase())
+                        .content(m.getContent())
+                        .build())
+                .toList();
+
+        // 1) Lưu tin nhắn user
+        ChatMessage userMessage = ChatMessage.builder()
+                .conversation(conversation)
+                .role(MessageRole.USER)
+                .content(request.getMessage())
+                .build();
+        userMessage = chatMessageRepository.save(userMessage);
+
+        if (conversation.getTitle() == null || conversation.getTitle().isBlank()) {
+            conversation.setTitle(truncateTitle(request.getMessage()));
+        }
+
+        // 2) Gọi ai-service
+        ChatDtos.AiChatResponse aiResponse = callAiService(request.getMessage(), history, conversation.getLockedSpecialty());
+
+        // 3) Nếu đây là câu trả lời hợp lệ đầu tiên (chưa mismatch) và conversation
+        // chưa có lockedSpecialty -> khóa lại theo chuyên khoa đầu tiên AI đề xuất.
+        if (!aiResponse.isTopicMismatch()
+                && conversation.getLockedSpecialty() == null
+                && aiResponse.getSuggestedSpecialties() != null
+                && !aiResponse.getSuggestedSpecialties().isEmpty()) {
+            conversation.setLockedSpecialty(aiResponse.getSuggestedSpecialties().get(0));
+        }
+
+        // 4) Lưu tin nhắn assistant (kể cả khi là câu từ chối do khác chủ đề,
+        // để lịch sử chat vẫn phản ánh đúng những gì đã hiển thị cho user)
+        ChatMessage assistantMessage = ChatMessage.builder()
+                .conversation(conversation)
+                .role(MessageRole.ASSISTANT)
+                .content(aiResponse.getReply())
+                .build();
+        assistantMessage = chatMessageRepository.save(assistantMessage);
+
+        conversationRepository.save(conversation); // cập nhật updatedAt + lockedSpecialty + title
+
+        return ChatDtos.ChatReplyResponse.builder()
+                .userMessage(toMessageResponse(userMessage))
+                .assistantMessage(toMessageResponse(assistantMessage))
+                .sources(aiResponse.getSources() != null ? aiResponse.getSources() : Collections.emptyList())
+                .suggestedSpecialties(aiResponse.getSuggestedSpecialties() != null
+                        ? aiResponse.getSuggestedSpecialties() : Collections.emptyList())
+                .emergency(aiResponse.isEmergency())
+                .topicMismatch(aiResponse.isTopicMismatch())
+                .build();
+    }
+
     // ── Helpers ───────────────────────────────────────────────
+
+    private ChatDtos.AiChatResponse callAiService(
+            String message, List<ChatDtos.AiHistoryItem> history, String lockedSpecialty) {
+
+        ChatDtos.AiChatRequest requestBody = ChatDtos.AiChatRequest.builder()
+                .message(message)
+                .history(history)
+                .lockedSpecialty(lockedSpecialty)
+                .build();
+
+        try {
+            ChatDtos.AiChatResponse response = aiServiceRestTemplate.postForObject(
+                    aiServiceUrl + "/api/ai/chat", requestBody, ChatDtos.AiChatResponse.class);
+
+            if (response == null) {
+                throw new IllegalStateException("ai-service trả về response rỗng");
+            }
+            return response;
+        } catch (Exception ex) {
+            // Không bao giờ để lỗi gọi ai-service làm sập cả request — trả về
+            // câu xin lỗi giống cách ai-service tự xử lý lỗi nội bộ của nó.
+            log.error("Lỗi khi gọi ai-service: {}", ex.getMessage(), ex);
+            ChatDtos.AiChatResponse fallback = new ChatDtos.AiChatResponse();
+            fallback.setReply("Xin lỗi, hệ thống AI đang gặp sự cố. Bạn vui lòng thử lại sau ít phút.");
+            fallback.setSuggestedSpecialties(Collections.emptyList());
+            fallback.setSources(Collections.emptyList());
+            fallback.setEmergency(false);
+            fallback.setTopicMismatch(false);
+            return fallback;
+        }
+    }
 
     private Conversation findOwnedConversation(UUID userId, UUID conversationId) {
         return conversationRepository.findByIdAndUserId(conversationId, userId)
@@ -121,7 +222,6 @@ public class ChatServiceImpl implements ChatService {
             return MessageFeedback.valueOf(raw.trim().toUpperCase());
         } catch (IllegalArgumentException ex) {
             throw new AppException(ErrorCode.VALIDATION_FAILED, "Invalid feedback: " + raw);
-
         }
     }
 

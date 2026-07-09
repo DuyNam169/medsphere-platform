@@ -7,17 +7,33 @@ import { useTranslation } from 'react-i18next';
 import SvgIcon from '../../../core/icons/SvgIcon';
 import { useToastStore } from '../../../core/store/toastStore';
 
+export interface MessageSource {
+  title: string;
+  url: string;
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   feedback?: 'up' | 'down' | null;
+  // Nguồn tham khảo AI đã dùng để trả lời (nếu có).
+  sources?: MessageSource[];
+  // Chuyên khoa AI gợi ý cho tin nhắn này (nếu có).
+  suggestedSpecialties?: string[];
+  emergency?: boolean;
+  // True nếu tin nhắn này là câu từ chối do câu hỏi khác chủ đề với đoạn chat.
+  topicMismatch?: boolean;
+  // Câu hỏi gốc của user khi bị chặn — dùng để tạo đoạn chat mới kèm câu này.
+  mismatchOriginalMessage?: string;
 }
 
 interface AiMessageBubbleProps {
   message: Message;
   onFeedback?: (messageId: string, feedback: 'up' | 'down') => void;
+  onCreateNewChat?: (question: string) => void;
+  onViewDetails?: (message: Message) => void;
 }
 
 const renderContent = (content: string): React.ReactNode[] => {
@@ -44,11 +60,20 @@ const renderContent = (content: string): React.ReactNode[] => {
 const formatTime = (date: Date): string =>
   date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
-const AiMessageBubble: React.FC<AiMessageBubbleProps> = ({ message, onFeedback }) => {
+const AiMessageBubble: React.FC<AiMessageBubbleProps> = ({
+  message,
+  onFeedback,
+  onCreateNewChat,
+  onViewDetails,
+}) => {
   const { t } = useTranslation();
   const showToast = useToastStore((s) => s.show);
   const isUser = message.role === 'user';
   const [localFeedback, setLocalFeedback] = useState<'up' | 'down' | null>(message.feedback ?? null);
+
+  const hasDetails =
+    (message.sources && message.sources.length > 0) ||
+    (message.suggestedSpecialties && message.suggestedSpecialties.length > 0);
 
   const handleCopy = async () => {
     try {
@@ -83,6 +108,33 @@ const AiMessageBubble: React.FC<AiMessageBubbleProps> = ({ message, onFeedback }
         <div className={`ai-bubble ${isUser ? 'ai-bubble--user' : 'ai-bubble--assistant'}`}>
           {renderContent(message.content)}
         </div>
+
+        {/* Khi phát hiện khác chủ đề: hiện nút tạo đoạn chat mới kèm câu hỏi cũ */}
+        {!isUser && message.topicMismatch && (
+          <div className="ai-topic-mismatch-box">
+            <button
+              type="button"
+              className="ai-topic-mismatch-btn"
+              onClick={() => onCreateNewChat?.(message.mismatchOriginalMessage ?? '')}
+            >
+              + {t('ai.createNewChatWithQuestion', { defaultValue: 'Tạo đoạn chat mới với câu hỏi này' })}
+            </button>
+          </div>
+        )}
+
+        {/* Nút mở lại khung chi tiết bên phải cho tin nhắn này */}
+        {!isUser && hasDetails && (
+          <div className="ai-view-details-box">
+            <button
+              type="button"
+              className="ai-view-details-btn"
+              onClick={() => onViewDetails?.(message)}
+            >
+              <SvgIcon name="IconSearch" size={12} color="currentColor" />
+              {t('ai.viewDetails', { defaultValue: 'Xem chi tiết' })}
+            </button>
+          </div>
+        )}
 
         <div className={`ai-bubble-meta ${isUser ? 'ai-bubble-meta--user' : ''}`}>
           <span className="ai-bubble-time">{formatTime(message.timestamp)}</span>

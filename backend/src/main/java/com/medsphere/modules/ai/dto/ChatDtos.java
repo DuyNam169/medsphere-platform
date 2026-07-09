@@ -59,4 +59,63 @@ public final class ChatDtos {
         @NotBlank
         private String feedback; // "up" hoặc "down"
     }
+
+    // ── Luồng chat qua backend (FE -> BE -> ai-service) ──────────
+
+    /** Request từ frontend: chỉ cần gửi nội dung câu hỏi. */
+    @Data
+    public static class SendChatMessageRequest {
+        @NotBlank
+        private String message;
+    }
+
+    @Data
+    @Builder
+    public static class SourceItem {
+        private String title;
+        private String url;
+    }
+
+    /**
+     * Response trả về cho frontend sau 1 lượt hỏi-đáp: gồm tin nhắn user và
+     * tin nhắn assistant đã được lưu, cộng thêm metadata riêng của lượt trả
+     * lời này (sources, suggestedSpecialties, emergency, topicMismatch).
+     * Metadata này KHÔNG được lưu lại trong DB, chỉ trả về ngay lúc đó.
+     */
+    @Data
+    @Builder
+    public static class ChatReplyResponse {
+        private MessageResponse userMessage;
+        private MessageResponse assistantMessage;
+        private List<SourceItem> sources;
+        private List<String> suggestedSpecialties;
+        private boolean emergency;
+        private boolean topicMismatch;
+    }
+
+    // ── DTO nội bộ để gọi sang ai-service (không lộ ra ngoài controller) ──
+
+    @Data
+    @Builder
+    public static class AiHistoryItem {
+        private String role;
+        private String content;
+    }
+
+    @Data
+    @Builder
+    public static class AiChatRequest {
+        private String message;
+        private List<AiHistoryItem> history;
+        private String lockedSpecialty;
+    }
+
+    @Data
+    public static class AiChatResponse {
+        private String reply;
+        private List<String> suggestedSpecialties;
+        private List<SourceItem> sources;
+        private boolean emergency;
+        private boolean topicMismatch;
+    }
 }

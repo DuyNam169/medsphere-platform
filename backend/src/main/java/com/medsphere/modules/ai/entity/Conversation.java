@@ -24,6 +24,13 @@ public class Conversation extends BaseEntity {
     @Column(length = 255)
     private String title;
 
+    // Chuyên khoa đã "khóa" cho đoạn chat này — xác định từ suggestedSpecialties
+    // của tin nhắn AI đầu tiên. Dùng để chặn các câu hỏi khác chủ đề trong cùng
+    // 1 đoạn chat (xem ChatServiceImpl.chat()). Null nếu chưa có tin nhắn nào,
+    // hoặc tin nhắn đầu tiên không xác định được chuyên khoa nào.
+    @Column(name = "locked_specialty", length = 64)
+    private String lockedSpecialty;
+
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")
     @Builder.Default
