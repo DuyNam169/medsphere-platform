@@ -1,20 +1,22 @@
 // ============================================================
 // AiDetailPanel.tsx — src/packages/ai/components/AiDetailPanel.tsx
 // Khung chi tiết bên phải, hiển thị thông tin AI đã thu thập được cho
-// 1 tin nhắn cụ thể (nguồn tham khảo, chuyên khoa gợi ý, cảnh báo khẩn
-// cấp...). Có thể đóng/mở và KÉO THẢ để tùy chỉnh chiều rộng tự do
-// (không còn giới hạn 2 mức cố định).
+// 1 tin nhắn cụ thể: bảng tổng hợp trực quan (triệu chứng, nguyên nhân,
+// hậu quả, biện pháp...), chuyên khoa gợi ý, và nguồn tham khảo. Có thể
+// đóng/mở và KÉO THẢ để tùy chỉnh chiều rộng tự do (không còn giới hạn
+// 2 mức cố định).
 // ============================================================
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import SvgIcon from '../../../core/icons/SvgIcon';
-import { MessageSource } from './AiMessageBubble';
+import { MessageSource, StructuredSummary, EmergencyLevel } from './AiMessageBubble';
 
 export interface DetailPanelData {
   sources?: MessageSource[];
   suggestedSpecialties?: string[];
   emergency?: boolean;
   topicMismatch?: boolean;
+  structuredSummary?: StructuredSummary | null;
 }
 
 interface AiDetailPanelProps {
@@ -24,6 +26,32 @@ interface AiDetailPanelProps {
   onClose: () => void;
   onStartResize: (e: React.MouseEvent) => void;
 }
+
+const EMERGENCY_LEVEL_CONFIG: Record <
+  EmergencyLevel,
+  { labelKey: string; defaultLabel: string; className: string }
+> = {
+  NORMAL: {
+    labelKey: 'ai.emergencyLevel.normal',
+    defaultLabel: 'Bình thường',
+    className: 'ai-detail-panel__level-badge--normal',
+  },
+  MONITOR: {
+    labelKey: 'ai.emergencyLevel.monitor',
+    defaultLabel: 'Nên theo dõi',
+    className: 'ai-detail-panel__level-badge--monitor',
+  },
+  SEE_DOCTOR_SOON: {
+    labelKey: 'ai.emergencyLevel.seeDoctorSoon',
+    defaultLabel: 'Cần khám sớm',
+    className: 'ai-detail-panel__level-badge--see-doctor-soon',
+  },
+  EMERGENCY: {
+    labelKey: 'ai.emergencyLevel.emergency',
+    defaultLabel: 'Cấp cứu',
+    className: 'ai-detail-panel__level-badge--emergency',
+  },
+};
 
 const AiDetailPanel: React.FC<AiDetailPanelProps> = ({
   isOpen,
@@ -36,8 +64,12 @@ const AiDetailPanel: React.FC<AiDetailPanelProps> = ({
 
   if (!isOpen) return null;
 
+  const summary = data?.structuredSummary;
   const hasSources = !!data?.sources && data.sources.length > 0;
   const hasSpecialties = !!data?.suggestedSpecialties && data.suggestedSpecialties.length > 0;
+  const hasSummary = !!summary;
+
+  const levelConfig = summary ? EMERGENCY_LEVEL_CONFIG[summary.emergencyLevel] : null;
 
   return (
     <aside className="ai-detail-panel" style={{ width: `${widthPx}px` }}>
@@ -65,7 +97,7 @@ const AiDetailPanel: React.FC<AiDetailPanelProps> = ({
       </div>
 
       <div className="ai-detail-panel__body">
-        {!hasSources && !hasSpecialties && (
+        {!hasSummary && !hasSources && !hasSpecialties && (
           <p className="ai-detail-panel__empty">
             {t('ai.detailPanelEmpty', {
               defaultValue: 'Chưa có thông tin chi tiết nào cho tin nhắn này.',
@@ -73,12 +105,131 @@ const AiDetailPanel: React.FC<AiDetailPanelProps> = ({
           </p>
         )}
 
-        {data?.emergency && (
-          <div className="ai-detail-panel__emergency-badge">
+        {/* ── Mức độ khẩn cấp — luôn đặt đầu tiên, dễ nhìn nhất ── */}
+        {levelConfig && (
+          <div className={`ai-detail-panel__level-badge ${levelConfig.className}`}>
+            {t(levelConfig.labelKey, { defaultValue: levelConfig.defaultLabel })}
+          </div>
+        )}
+        {!levelConfig && data?.emergency && (
+          <div className="ai-detail-panel__level-badge ai-detail-panel__level-badge--emergency">
             ⚠️ {t('ai.detailPanelEmergency', { defaultValue: 'Dấu hiệu cấp cứu' })}
           </div>
         )}
 
+        {/* ── Tóm tắt nhanh ── */}
+        {summary?.quickSummary && (
+          <section className="ai-detail-panel__section">
+            <p className="ai-detail-panel__quick-summary">{summary.quickSummary}</p>
+          </section>
+        )}
+
+        {/* ── Triệu chứng ── */}
+        {summary && summary.symptoms.length > 0 && (
+          <section className="ai-detail-panel__section">
+            <h4 className="ai-detail-panel__section-title">
+              {t('ai.detailPanelSymptoms', { defaultValue: 'Triệu chứng' })}
+            </h4>
+            <ul className="ai-detail-panel__tag-list">
+              {summary.symptoms.map((s, i) => (
+                <li key={i} className="ai-detail-panel__tag">
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ── Nguyên nhân — phân nhóm theo mức độ phổ biến ── */}
+        {summary &&
+          (summary.commonCauses.length > 0 ||
+            summary.rareCauses.length > 0 ||
+            summary.seriousCauses.length > 0) && (
+            <section className="ai-detail-panel__section">
+              <h4 className="ai-detail-panel__section-title">
+                {t('ai.detailPanelCauses', { defaultValue: 'Nguyên nhân có thể' })}
+              </h4>
+
+              {summary.commonCauses.length > 0 && (
+                <div className="ai-detail-panel__cause-group">
+                  <span className="ai-detail-panel__cause-group-label">
+                    {t('ai.detailPanelCausesCommon', { defaultValue: 'Phổ biến' })}
+                  </span>
+                  <ul className="ai-detail-panel__bullet-list">
+                    {summary.commonCauses.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {summary.rareCauses.length > 0 && (
+                <div className="ai-detail-panel__cause-group">
+                  <span className="ai-detail-panel__cause-group-label">
+                    {t('ai.detailPanelCausesRare', { defaultValue: 'Ít gặp hơn' })}
+                  </span>
+                  <ul className="ai-detail-panel__bullet-list">
+                    {summary.rareCauses.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {summary.seriousCauses.length > 0 && (
+                <div className="ai-detail-panel__cause-group ai-detail-panel__cause-group--serious">
+                  <span className="ai-detail-panel__cause-group-label">
+                    {t('ai.detailPanelCausesSerious', { defaultValue: 'Cần lưu ý' })}
+                  </span>
+                  <ul className="ai-detail-panel__bullet-list">
+                    {summary.seriousCauses.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+          )}
+
+        {/* ── Hậu quả nếu không điều trị ── */}
+        {summary?.consequences && (
+          <section className="ai-detail-panel__section">
+            <h4 className="ai-detail-panel__section-title">
+              {t('ai.detailPanelConsequences', { defaultValue: 'Nếu không xử lý' })}
+            </h4>
+            <p className="ai-detail-panel__text">{summary.consequences}</p>
+          </section>
+        )}
+
+        {/* ── Biện pháp: tự chăm sóc tại nhà ── */}
+        {summary && summary.selfCareActions.length > 0 && (
+          <section className="ai-detail-panel__section">
+            <h4 className="ai-detail-panel__section-title">
+              {t('ai.detailPanelSelfCare', { defaultValue: 'Có thể tự chăm sóc tại nhà' })}
+            </h4>
+            <ul className="ai-detail-panel__bullet-list">
+              {summary.selfCareActions.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ── Biện pháp: khi nào cần đi khám ── */}
+        {summary && summary.whenToSeeDoctor.length > 0 && (
+          <section className="ai-detail-panel__section">
+            <h4 className="ai-detail-panel__section-title">
+              {t('ai.detailPanelWhenToSeeDoctor', { defaultValue: 'Nên đi khám nếu' })}
+            </h4>
+            <ul className="ai-detail-panel__bullet-list">
+              {summary.whenToSeeDoctor.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ── Chuyên khoa gợi ý ── */}
         {hasSpecialties && (
           <section className="ai-detail-panel__section">
             <h4 className="ai-detail-panel__section-title">
@@ -94,6 +245,7 @@ const AiDetailPanel: React.FC<AiDetailPanelProps> = ({
           </section>
         )}
 
+        {/* ── Nguồn tham khảo ── */}
         {hasSources && (
           <section className="ai-detail-panel__section">
             <h4 className="ai-detail-panel__section-title">

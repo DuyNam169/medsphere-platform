@@ -24,12 +24,21 @@ public class Conversation extends BaseEntity {
     @Column(length = 255)
     private String title;
 
-    // Chuyên khoa đã "khóa" cho đoạn chat này — xác định từ suggestedSpecialties
-    // của tin nhắn AI đầu tiên. Dùng để chặn các câu hỏi khác chủ đề trong cùng
-    // 1 đoạn chat (xem ChatServiceImpl.chat()). Null nếu chưa có tin nhắn nào,
-    // hoặc tin nhắn đầu tiên không xác định được chuyên khoa nào.
+    // Chuyên khoa đã "khóa" cho đoạn chat này — xem ChatServiceImpl.chat().
     @Column(name = "locked_specialty", length = 64)
     private String lockedSpecialty;
+
+    // Danh sách triệu chứng đã biết (JSON array of string), tích lũy dần
+    // qua các lượt hỏi trong cùng đoạn chat. Dùng để ai-service so sánh
+    // xem câu hỏi mới có triệu chứng nào MỚI không.
+    @Column(name = "known_symptoms_json", columnDefinition = "TEXT")
+    private String knownSymptomsJson;
+
+    // Context (link + nội dung) đã lấy được ở lần tìm kiếm gần nhất (JSON
+    // array of {title, url, content}). Được tái sử dụng khi không có triệu
+    // chứng mới, tránh gọi lại Tavily không cần thiết.
+    @Column(name = "cached_context_json", columnDefinition = "TEXT")
+    private String cachedContextJson;
 
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")

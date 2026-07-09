@@ -1,5 +1,7 @@
 package com.medsphere.modules.ai.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medsphere.core.exception.AppException;
 import com.medsphere.core.exception.ErrorCode;
 import com.medsphere.modules.ai.dto.ChatDtos;
@@ -33,6 +35,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository  chatMessageRepository;
     private final UserRepository         userRepository;
     private final RestTemplate           aiServiceRestTemplate;
+    private final ObjectMapper           objectMapper;
 
     @Value("${app.ai-service-url}")
     private String aiServiceUrl;
@@ -116,14 +119,15 @@ public class ChatServiceImpl implements ChatService {
 
         Conversation conversation = findOwnedConversation(userId, conversationId);
 
-        // Lịch sử hội thoại TRƯỚC khi thêm tin nhắn mới này — dùng làm "history"
-        // gửi cho ai-service, để tin nhắn hiện tại không bị lặp lại 2 lần.
         List<ChatDtos.AiHistoryItem> history = conversation.getMessages().stream()
                 .map(m -> ChatDtos.AiHistoryItem.builder()
                         .role(m.getRole().name().toLowerCase())
                         .content(m.getContent())
                         .build())
                 .toList();
+
+        List<String> knownSymptoms = parseSymptoms(conversation.getKnownSymptomsJson());
+        List<ChatDtos.ContextChunkItem> cachedContext = parseContextChunks(conversation.getCachedContextJson());
 
         // 1) Lưu tin nhắn user
         ChatMessage userMessage = ChatMessage.builder()
@@ -137,11 +141,12 @@ public class ChatServiceImpl implements ChatService {
             conversation.setTitle(truncateTitle(request.getMessage()));
         }
 
-        // 2) Gọi ai-service
-        ChatDtos.AiChatResponse aiResponse = callAiService(request.getMessage(), history, conversation.getLockedSpecialty());
+        // 2) Gọi ai-service, kèm known symptoms + cached context để nó tự
+        // quyết định có cần tìm lại nguồn hay không.
+        ChatDtos.AiChatResponse aiResponse = callAiService(
+                request.getMessage(), history, conversation.getLockedSpecialty(), knownSymptoms, cachedContext);
 
-        // 3) Nếu đây là câu trả lời hợp lệ đầu tiên (chưa mismatch) và conversation
-        // chưa có lockedSpecialty -> khóa lại theo chuyên khoa đầu tiên AI đề xuất.
+        // 3) Khóa chủ đề nếu đây là lần đầu có kết quả hợp lệ
         if (!aiResponse.isTopicMismatch()
                 && conversation.getLockedSpecialty() == null
                 && aiResponse.getSuggestedSpecialties() != null
@@ -149,16 +154,25 @@ public class ChatServiceImpl implements ChatService {
             conversation.setLockedSpecialty(aiResponse.getSuggestedSpecialties().get(0));
         }
 
-        // 4) Lưu tin nhắn assistant (kể cả khi là câu từ chối do khác chủ đề,
-        // để lịch sử chat vẫn phản ánh đúng những gì đã hiển thị cho user)
+        // 4) Cập nhật cache triệu chứng + context cho lần hỏi sau
+        conversation.setKnownSymptomsJson(toJson(aiResponse.getUpdatedKnownSymptoms()));
+        conversation.setCachedContextJson(toJson(aiResponse.getContextChunksUsed()));
+
+        // 5) Lưu tin nhắn assistant kèm metadata hiển thị (sources, specialties,
+        // structuredSummary...)
         ChatMessage assistantMessage = ChatMessage.builder()
                 .conversation(conversation)
                 .role(MessageRole.ASSISTANT)
                 .content(aiResponse.getReply())
+                .sourcesJson(toJson(aiResponse.getSources()))
+                .suggestedSpecialtiesJson(toJson(aiResponse.getSuggestedSpecialties()))
+                .emergency(aiResponse.isEmergency())
+                .topicMismatch(aiResponse.isTopicMismatch())
+                .structuredSummaryJson(toJson(aiResponse.getStructuredSummary()))
                 .build();
         assistantMessage = chatMessageRepository.save(assistantMessage);
 
-        conversationRepository.save(conversation); // cập nhật updatedAt + lockedSpecialty + title
+        conversationRepository.save(conversation);
 
         return ChatDtos.ChatReplyResponse.builder()
                 .userMessage(toMessageResponse(userMessage))
@@ -174,12 +188,18 @@ public class ChatServiceImpl implements ChatService {
     // ── Helpers ───────────────────────────────────────────────
 
     private ChatDtos.AiChatResponse callAiService(
-            String message, List<ChatDtos.AiHistoryItem> history, String lockedSpecialty) {
+            String message,
+            List<ChatDtos.AiHistoryItem> history,
+            String lockedSpecialty,
+            List<String> knownSymptoms,
+            List<ChatDtos.ContextChunkItem> cachedContext) {
 
         ChatDtos.AiChatRequest requestBody = ChatDtos.AiChatRequest.builder()
                 .message(message)
                 .history(history)
                 .lockedSpecialty(lockedSpecialty)
+                .knownSymptoms(knownSymptoms)
+                .cachedContextChunks(cachedContext)
                 .build();
 
         try {
@@ -191,8 +211,6 @@ public class ChatServiceImpl implements ChatService {
             }
             return response;
         } catch (Exception ex) {
-            // Không bao giờ để lỗi gọi ai-service làm sập cả request — trả về
-            // câu xin lỗi giống cách ai-service tự xử lý lỗi nội bộ của nó.
             log.error("Lỗi khi gọi ai-service: {}", ex.getMessage(), ex);
             ChatDtos.AiChatResponse fallback = new ChatDtos.AiChatResponse();
             fallback.setReply("Xin lỗi, hệ thống AI đang gặp sự cố. Bạn vui lòng thử lại sau ít phút.");
@@ -200,7 +218,71 @@ public class ChatServiceImpl implements ChatService {
             fallback.setSources(Collections.emptyList());
             fallback.setEmergency(false);
             fallback.setTopicMismatch(false);
+            fallback.setHasNewSymptom(false);
+            fallback.setUpdatedKnownSymptoms(knownSymptoms);
+            fallback.setContextChunksUsed(cachedContext);
+            fallback.setStructuredSummary(null);
             return fallback;
+        }
+    }
+
+    private String toJson(Object value) {
+        if (value == null) return null;
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (Exception ex) {
+            log.warn("Không serialize được sang JSON: {}", ex.getMessage());
+            return null;
+        }
+    }
+
+    private List<ChatDtos.SourceItem> parseSources(String json) {
+        if (json == null || json.isBlank()) return Collections.emptyList();
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<ChatDtos.SourceItem>>() {});
+        } catch (Exception ex) {
+            log.warn("Không đọc được sourcesJson đã lưu: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<String> parseSpecialties(String json) {
+        if (json == null || json.isBlank()) return Collections.emptyList();
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
+        } catch (Exception ex) {
+            log.warn("Không đọc được suggestedSpecialtiesJson đã lưu: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<String> parseSymptoms(String json) {
+        if (json == null || json.isBlank()) return Collections.emptyList();
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
+        } catch (Exception ex) {
+            log.warn("Không đọc được knownSymptomsJson đã lưu: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<ChatDtos.ContextChunkItem> parseContextChunks(String json) {
+        if (json == null || json.isBlank()) return Collections.emptyList();
+        try {
+            return objectMapper.readValue(json, new TypeReference<List<ChatDtos.ContextChunkItem>>() {});
+        } catch (Exception ex) {
+            log.warn("Không đọc được cachedContextJson đã lưu: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private ChatDtos.StructuredSummary parseStructuredSummary(String json) {
+        if (json == null || json.isBlank()) return null;
+        try {
+            return objectMapper.readValue(json, ChatDtos.StructuredSummary.class);
+        } catch (Exception ex) {
+            log.warn("Không đọc được structuredSummaryJson đã lưu: {}", ex.getMessage());
+            return null;
         }
     }
 
@@ -255,6 +337,11 @@ public class ChatServiceImpl implements ChatService {
                 .content(m.getContent())
                 .feedback(m.getFeedback() != null ? m.getFeedback().name().toLowerCase() : null)
                 .createdAt(m.getCreatedAt())
+                .sources(parseSources(m.getSourcesJson()))
+                .suggestedSpecialties(parseSpecialties(m.getSuggestedSpecialtiesJson()))
+                .emergency(m.isEmergency())
+                .topicMismatch(m.isTopicMismatch())
+                .structuredSummary(parseStructuredSummary(m.getStructuredSummaryJson()))
                 .build();
     }
 }

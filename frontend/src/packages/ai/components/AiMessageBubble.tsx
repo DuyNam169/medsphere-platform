@@ -12,6 +12,22 @@ export interface MessageSource {
   url: string;
 }
 
+export type EmergencyLevel = 'NORMAL' | 'MONITOR' | 'SEE_DOCTOR_SOON' | 'EMERGENCY';
+
+// Bảng tổng hợp trực quan cho AiDetailPanel — mirror
+// app.shared.schemas.StructuredSummary bên ai-service.
+export interface StructuredSummary {
+  quickSummary: string;
+  emergencyLevel: EmergencyLevel;
+  symptoms: string[];
+  commonCauses: string[];
+  rareCauses: string[];
+  seriousCauses: string[];
+  consequences: string;
+  selfCareActions: string[];
+  whenToSeeDoctor: string[];
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -27,6 +43,8 @@ export interface Message {
   topicMismatch?: boolean;
   // Câu hỏi gốc của user khi bị chặn — dùng để tạo đoạn chat mới kèm câu này.
   mismatchOriginalMessage?: string;
+  // Bảng tổng hợp trực quan (triệu chứng/nguyên nhân/hậu quả/biện pháp...).
+  structuredSummary?: StructuredSummary | null;
 }
 
 interface AiMessageBubbleProps {
@@ -73,7 +91,8 @@ const AiMessageBubble: React.FC<AiMessageBubbleProps> = ({
 
   const hasDetails =
     (message.sources && message.sources.length > 0) ||
-    (message.suggestedSpecialties && message.suggestedSpecialties.length > 0);
+    (message.suggestedSpecialties && message.suggestedSpecialties.length > 0) ||
+    !!message.structuredSummary;
 
   const handleCopy = async () => {
     try {

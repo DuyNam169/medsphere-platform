@@ -15,9 +15,8 @@ import { chatService, ConversationSummary } from '../services/chatService';
 import '../styles/ai.css';
 import { Attachment } from '../components/AiInputBar';
 
-// Giới hạn chiều rộng khung chi tiết khi kéo thả
 const DETAIL_PANEL_MIN_WIDTH = 320;
-const DETAIL_PANEL_MAX_RATIO = 0.85; // tối đa 85% chiều rộng màn hình
+const DETAIL_PANEL_MAX_RATIO = 0.85;
 
 const AiPage: React.FC = () => {
   const { t } = useTranslation();
@@ -34,7 +33,6 @@ const AiPage: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [isLoadingConversations, setIsLoadingConversations] = useState(false);
 
-  // Khung chi tiết bên phải — mặc định mở ra chiếm nửa màn hình, kéo thả tự do
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
   const [detailPanelWidth, setDetailPanelWidth] = useState<number>(
     Math.round(window.innerWidth / 2)
@@ -47,7 +45,6 @@ const AiPage: React.FC = () => {
 
   const requireLogin = () => navigate('/login');
 
-  // Nạp danh sách hội thoại khi đăng nhập / đăng xuất
   useEffect(() => {
     if (!isAuthenticated) {
       setConversations([]);
@@ -61,11 +58,9 @@ const AiPage: React.FC = () => {
       .finally(() => setIsLoadingConversations(false));
   }, [isAuthenticated]);
 
-  // ── Kéo thả để thay đổi kích thước khung chi tiết ──────────
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDraggingRef.current) return;
-      // Panel nằm bên phải, kéo thanh sang trái (clientX giảm) -> panel rộng ra
       const delta = dragStartXRef.current - e.clientX;
       const maxWidth = Math.round(window.innerWidth * DETAIL_PANEL_MAX_RATIO);
       const nextWidth = Math.min(
@@ -94,7 +89,7 @@ const AiPage: React.FC = () => {
     isDraggingRef.current = true;
     dragStartXRef.current = e.clientX;
     dragStartWidthRef.current = detailPanelWidth;
-    document.body.style.userSelect = 'none'; // tránh bôi đen chữ khi kéo
+    document.body.style.userSelect = 'none';
     document.body.style.cursor = 'col-resize';
   };
 
@@ -118,6 +113,11 @@ const AiPage: React.FC = () => {
           content: m.content,
           timestamp: new Date(m.createdAt),
           feedback: m.feedback,
+          sources: m.sources,
+          suggestedSpecialties: m.suggestedSpecialties,
+          emergency: m.emergency,
+          topicMismatch: m.topicMismatch,
+          structuredSummary: m.structuredSummary,
         }))
       );
       setDetailPanelOpen(false);
@@ -139,23 +139,17 @@ const AiPage: React.FC = () => {
   };
 
   const openDetailPanelFor = (msg: Message) => {
-    setDetailPanelData({
-      sources: msg.sources,
-      suggestedSpecialties: msg.suggestedSpecialties,
-      emergency: msg.emergency,
-      topicMismatch: msg.topicMismatch,
-    });
-    // Mỗi lần mở lại (kể cả đã đóng trước đó) đều về mặc định nửa màn hình,
-    // để không bị "kẹt" ở kích thước rất nhỏ nếu lần trước kéo lỡ tay.
-    setDetailPanelWidth(Math.round(window.innerWidth / 2));
-    setDetailPanelOpen(true);
-  };
+      setDetailPanelData({
+        sources: msg.sources,
+        suggestedSpecialties: msg.suggestedSpecialties,
+        emergency: msg.emergency,
+        topicMismatch: msg.topicMismatch,
+        structuredSummary: msg.structuredSummary,
+      });
+      setDetailPanelWidth(Math.round(window.innerWidth / 2));
+      setDetailPanelOpen(true);
+    };
 
-  /**
-   * Gửi 1 câu hỏi vào 1 conversation cụ thể đã tồn tại trên backend.
-   * Dùng chung cho cả "gửi tin nhắn bình thường" và "tạo chat mới từ nút
-   * khi bị chặn khác chủ đề" — để không lặp lại logic 2 nơi.
-   */
   const performSend = async (conversationId: string, userContent: string) => {
     const optimisticId = `local-${Date.now()}`;
     const userMsg: Message = {
@@ -180,6 +174,7 @@ const AiPage: React.FC = () => {
         emergency: result.emergency,
         topicMismatch: result.topicMismatch,
         mismatchOriginalMessage: result.topicMismatch ? userContent : undefined,
+        structuredSummary: result.assistantMessage.structuredSummary,
       };
 
       setMessages((prev) => {
@@ -195,10 +190,10 @@ const AiPage: React.FC = () => {
         return [...withRealUserId, assistantMsg];
       });
 
-      // Tự động mở khung chi tiết (chiếm nửa màn hình) nếu có thông tin đáng hiển thị
       const hasDetails =
         (result.sources && result.sources.length > 0) ||
-        (result.suggestedSpecialties && result.suggestedSpecialties.length > 0);
+        (result.suggestedSpecialties && result.suggestedSpecialties.length > 0) ||
+        !!result.assistantMessage.structuredSummary;
       if (hasDetails) {
         openDetailPanelFor(assistantMsg);
       }

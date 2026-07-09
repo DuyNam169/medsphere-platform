@@ -29,6 +29,15 @@ public final class ChatDtos {
         private String content;
         private String feedback;
         private Instant createdAt;
+
+        private List<SourceItem> sources;
+        private List<String> suggestedSpecialties;
+        private boolean emergency;
+        private boolean topicMismatch;
+        // Bảng tổng hợp trực quan cho AiDetailPanel — chỉ có giá trị thật
+        // với tin nhắn role="assistant". Null nếu AI không tổng hợp được
+        // (ví dụ topicMismatch=true) hoặc tin nhắn cũ trước khi có tính năng này.
+        private StructuredSummary structuredSummary;
     }
 
     @Data
@@ -48,7 +57,7 @@ public final class ChatDtos {
     @Data
     public static class SendMessageRequest {
         @NotBlank
-        private String role; // "user" hoặc "assistant"
+        private String role;
 
         @NotBlank
         private String content;
@@ -57,12 +66,11 @@ public final class ChatDtos {
     @Data
     public static class FeedbackRequest {
         @NotBlank
-        private String feedback; // "up" hoặc "down"
+        private String feedback;
     }
 
     // ── Luồng chat qua backend (FE -> BE -> ai-service) ──────────
 
-    /** Request từ frontend: chỉ cần gửi nội dung câu hỏi. */
     @Data
     public static class SendChatMessageRequest {
         @NotBlank
@@ -77,11 +85,37 @@ public final class ChatDtos {
     }
 
     /**
-     * Response trả về cho frontend sau 1 lượt hỏi-đáp: gồm tin nhắn user và
-     * tin nhắn assistant đã được lưu, cộng thêm metadata riêng của lượt trả
-     * lời này (sources, suggestedSpecialties, emergency, topicMismatch).
-     * Metadata này KHÔNG được lưu lại trong DB, chỉ trả về ngay lúc đó.
+     * 1 đoạn nội dung đã lấy từ nguồn tin cậy — có thêm "content" so với
+     * SourceItem, để cache lại và tái sử dụng khi không có triệu chứng mới
+     * (xem Conversation.cachedContextJson).
      */
+    @Data
+    @Builder
+    public static class ContextChunkItem {
+        private String title;
+        private String url;
+        private String content;
+    }
+
+    /**
+     * Bảng tổng hợp trực quan hiển thị ở AiDetailPanel (mirror
+     * app.shared.schemas.StructuredSummary bên ai-service — GIỮ 2 BÊN
+     * ĐỒNG BỘ, sửa bên này thì phải sửa bên Python và ngược lại).
+     */
+    @Data
+    @Builder
+    public static class StructuredSummary {
+        private String quickSummary;
+        private String emergencyLevel; // NORMAL | MONITOR | SEE_DOCTOR_SOON | EMERGENCY
+        private List<String> symptoms;
+        private List<String> commonCauses;
+        private List<String> rareCauses;
+        private List<String> seriousCauses;
+        private String consequences;
+        private List<String> selfCareActions;
+        private List<String> whenToSeeDoctor;
+    }
+
     @Data
     @Builder
     public static class ChatReplyResponse {
@@ -108,6 +142,8 @@ public final class ChatDtos {
         private String message;
         private List<AiHistoryItem> history;
         private String lockedSpecialty;
+        private List<String> knownSymptoms;
+        private List<ContextChunkItem> cachedContextChunks;
     }
 
     @Data
@@ -117,5 +153,9 @@ public final class ChatDtos {
         private List<SourceItem> sources;
         private boolean emergency;
         private boolean topicMismatch;
+        private boolean hasNewSymptom;
+        private List<String> updatedKnownSymptoms;
+        private List<ContextChunkItem> contextChunksUsed;
+        private StructuredSummary structuredSummary;
     }
 }

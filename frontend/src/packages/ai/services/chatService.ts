@@ -15,23 +15,47 @@ export interface ConversationSummary {
   updatedAt: string;
 }
 
+export interface SourceItem {
+  title: string;
+  url: string;
+}
+
+// Mirror app.shared.schemas.StructuredSummary bên ai-service.
+export type EmergencyLevel = 'NORMAL' | 'MONITOR' | 'SEE_DOCTOR_SOON' | 'EMERGENCY';
+
+export interface StructuredSummary {
+  quickSummary: string;
+  emergencyLevel: EmergencyLevel;
+  symptoms: string[];
+  commonCauses: string[];
+  rareCauses: string[];
+  seriousCauses: string[];
+  consequences: string;
+  selfCareActions: string[];
+  whenToSeeDoctor: string[];
+}
+
 export interface ChatMessageResponse {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   feedback: 'up' | 'down' | null;
   createdAt: string;
+  // Metadata AI đã lưu — chỉ có giá trị thật với tin nhắn role="assistant".
+  // Nhờ backend lưu lại (không phải chỉ trả về lúc chat xong), nên khi tải
+  // lại đoạn chat cũ (F5, chuyển qua lại giữa các đoạn chat) vẫn còn đủ
+  // dữ liệu để mở khung "Xem chi tiết".
+  sources?: SourceItem[];
+  suggestedSpecialties?: string[];
+  emergency?: boolean;
+  topicMismatch?: boolean;
+  structuredSummary?: StructuredSummary | null;
 }
 
 export interface ConversationDetail {
   id: string;
   title: string | null;
   messages: ChatMessageResponse[];
-}
-
-export interface SourceItem {
-  title: string;
-  url: string;
 }
 
 export interface ChatReplyResponse {
@@ -53,9 +77,6 @@ export const chatService = {
   getConversation: (id: string): Promise<ConversationDetail> =>
     apiService.get<ConversationDetail>(`${BASE}/conversations/${id}`),
 
-  // Gửi 1 câu hỏi vào 1 đoạn chat cụ thể — backend sẽ tự lưu tin nhắn user,
-  // gọi ai-service, lưu tin nhắn assistant, và trả về đủ thông tin
-  // (sources, topicMismatch...) trong 1 lần gọi duy nhất.
   chat: (conversationId: string, message: string): Promise<ChatReplyResponse> =>
     apiService.post<ChatReplyResponse>(`${BASE}/conversations/${conversationId}/chat`, {
       message,
