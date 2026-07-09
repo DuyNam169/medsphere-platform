@@ -12,6 +12,8 @@ interface AiMessageListProps {
   isThinking: boolean;
   onSuggestClick: (text: string) => void;
   onFeedback?: (messageId: string, feedback: 'up' | 'down') => void;
+  onCreateNewChat?: (question: string) => void;
+  onViewDetails?: (message: Message) => void;
 }
 
 const AiMessageList: React.FC<AiMessageListProps> = ({
@@ -19,6 +21,8 @@ const AiMessageList: React.FC<AiMessageListProps> = ({
   isThinking,
   onSuggestClick,
   onFeedback,
+  onCreateNewChat,
+  onViewDetails,
 }) => {
   const { t } = useTranslation();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -61,7 +65,13 @@ const AiMessageList: React.FC<AiMessageListProps> = ({
         )}
 
         {messages.map((msg) => (
-          <AiMessageBubble key={msg.id} message={msg} onFeedback={onFeedback} />
+          <AiMessageBubble
+            key={msg.id}
+            message={msg}
+            onFeedback={onFeedback}
+            onCreateNewChat={onCreateNewChat}
+            onViewDetails={onViewDetails}
+          />
         ))}
 
         {isThinking && (

@@ -10,12 +10,12 @@ const authVi = {
     pageSubtitle: 'Đặt lịch khám và cập nhật tin y tế, tất cả trong một nơi.',
 
     // --- Form labels ---
-    emailOrPhone: 'Email hoặc số điện thoại',
+    emailOrPhone: 'Email',
     password: 'Mật khẩu',
     rememberMe: 'Ghi nhớ đăng nhập',
 
     // --- Placeholders ---
-    emailPlaceholder: 'Nhập email hoặc số điện thoại',
+    emailPlaceholder: 'Nhập email',
     passwordPlaceholder: 'Nhập mật khẩu',
 
     // --- Buttons ---

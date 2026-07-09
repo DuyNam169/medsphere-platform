@@ -1,350 +1,412 @@
-﻿\.idea
-\ai-service
-\backend
-\frontend
-\.env
-\.env.example
-\backend-logs.txt
-\backend_full_log.txt
-\docker-compose.yml
-\README.md
-\structure.txt
-\.idea\compiler.xml
-\.idea\encodings.xml
-\.idea\jarRepositories.xml
-\.idea\Medsphere.iml
-\.idea\misc.xml
-\.idea\modules.xml
-\.idea\vcs.xml
-\.idea\workspace.xml
-\ai-service\app
-\ai-service\.env
-\ai-service\Dockerfile
-\ai-service\requirements.txt
-\ai-service\app\api
-\ai-service\app\core
-\ai-service\app\models
-\ai-service\app\services
-\ai-service\app\utils
-\ai-service\app\main.py
-\ai-service\app\api\routes
-\ai-service\app\api\deps.py
-\ai-service\app\api\routes\ai_routes.py
-\ai-service\app\core\config.py
-\ai-service\app\core\security.py
-\ai-service\app\models\request_model.py
-\ai-service\app\services\llm_service.py
-\ai-service\app\services\rag_service.py
-\backend\.idea
-\backend\.mvn
-\backend\src
-\backend\.env
-\backend\Dockerfile
-\backend\HELP.md
-\backend\mvnw
-\backend\mvnw.cmd
-\backend\pom.xml
-\backend\.idea\compiler.xml
-\backend\.idea\encodings.xml
-\backend\.idea\jarRepositories.xml
-\backend\.idea\misc.xml
-\backend\.idea\vcs.xml
-\backend\.idea\workspace.xml
-\backend\.mvn\wrapper
-\backend\.mvn\wrapper\maven-wrapper.properties
-\backend\src\main
-\backend\src\test
-\backend\src\main\java
-\backend\src\main\resources
-\backend\src\main\java\com
-\backend\src\main\java\com\medsphere
-\backend\src\main\java\com\medsphere\core
-\backend\src\main\java\com\medsphere\modules
-\backend\src\main\java\com\medsphere\MedsphereApplication.java
-\backend\src\main\java\com\medsphere\core\config
-\backend\src\main\java\com\medsphere\core\constants
-\backend\src\main\java\com\medsphere\core\entity
-\backend\src\main\java\com\medsphere\core\exception
-\backend\src\main\java\com\medsphere\core\geo
-\backend\src\main\java\com\medsphere\core\response
-\backend\src\main\java\com\medsphere\core\security
-\backend\src\main\java\com\medsphere\core\validation
-\backend\src\main\java\com\medsphere\core\web
-\backend\src\main\java\com\medsphere\core\config\JwtConfig.java
-\backend\src\main\java\com\medsphere\core\config\MailMessageSourceConfig.java
-\backend\src\main\java\com\medsphere\core\config\RedisConfig.java
-\backend\src\main\java\com\medsphere\core\config\SecurityConfig.java
-\backend\src\main\java\com\medsphere\core\constants\AppConstants.java
-\backend\src\main\java\com\medsphere\core\entity\BaseEntity.java
-\backend\src\main\java\com\medsphere\core\exception\AppException.java
-\backend\src\main\java\com\medsphere\core\exception\ErrorCode.java
-\backend\src\main\java\com\medsphere\core\exception\GlobalExceptionHandler.java
-\backend\src\main\java\com\medsphere\core\geo\CountryLanguageMapper.java
-\backend\src\main\java\com\medsphere\core\response\ApiResponse.java
-\backend\src\main\java\com\medsphere\core\response\PageResponse.java
-\backend\src\main\java\com\medsphere\core\security\CustomUserDetailsService.java
-\backend\src\main\java\com\medsphere\core\security\JwtAuthFilter.java
-\backend\src\main\java\com\medsphere\core\security\JwtUtil.java
-\backend\src\main\java\com\medsphere\core\validation\E164PhoneValidator.java
-\backend\src\main\java\com\medsphere\core\validation\ValidE164Phone.java
-\backend\src\main\java\com\medsphere\core\web\RequestIpUtils.java
-\backend\src\main\java\com\medsphere\modules\auth
-\backend\src\main\java\com\medsphere\modules\geo
-\backend\src\main\java\com\medsphere\modules\mail
-\backend\src\main\java\com\medsphere\modules\auth\controller
-\backend\src\main\java\com\medsphere\modules\auth\dto
-\backend\src\main\java\com\medsphere\modules\auth\entity
-\backend\src\main\java\com\medsphere\modules\auth\enums
-\backend\src\main\java\com\medsphere\modules\auth\repository
-\backend\src\main\java\com\medsphere\modules\auth\service
-\backend\src\main\java\com\medsphere\modules\auth\controller\AdminController.java
-\backend\src\main\java\com\medsphere\modules\auth\controller\AuthController.java
-\backend\src\main\java\com\medsphere\modules\auth\dto\AdminDtos.java
-\backend\src\main\java\com\medsphere\modules\auth\dto\AuthDtos.java
-\backend\src\main\java\com\medsphere\modules\auth\dto\ForgotPasswordDtos.java
-\backend\src\main\java\com\medsphere\modules\auth\entity\BusinessProfile.java
-\backend\src\main\java\com\medsphere\modules\auth\entity\DoctorProfile.java
-\backend\src\main\java\com\medsphere\modules\auth\entity\PatientProfile.java
-\backend\src\main\java\com\medsphere\modules\auth\entity\User.java
-\backend\src\main\java\com\medsphere\modules\auth\enums\AuthProvider.java
-\backend\src\main\java\com\medsphere\modules\auth\enums\Gender.java
-\backend\src\main\java\com\medsphere\modules\auth\enums\Role.java
-\backend\src\main\java\com\medsphere\modules\auth\enums\VerificationStatus.java
-\backend\src\main\java\com\medsphere\modules\auth\repository\BusinessProfileRepository.java
-\backend\src\main\java\com\medsphere\modules\auth\repository\DoctorProfileRepository.java
-\backend\src\main\java\com\medsphere\modules\auth\repository\PatientProfileRepository.java
-\backend\src\main\java\com\medsphere\modules\auth\repository\UserRepository.java
-\backend\src\main\java\com\medsphere\modules\auth\service\AdminService.java
-\backend\src\main\java\com\medsphere\modules\auth\service\AdminServiceImpl.java
-\backend\src\main\java\com\medsphere\modules\auth\service\AuthService.java
-\backend\src\main\java\com\medsphere\modules\auth\service\AuthServiceImpl.java
-\backend\src\main\java\com\medsphere\modules\auth\service\GoogleTokenVerifier.java
-\backend\src\main\java\com\medsphere\modules\geo\controller
-\backend\src\main\java\com\medsphere\modules\geo\dto
-\backend\src\main\java\com\medsphere\modules\geo\service
-\backend\src\main\java\com\medsphere\modules\geo\controller\GeoController.java
-\backend\src\main\java\com\medsphere\modules\geo\dto\GeoDto.java
-\backend\src\main\java\com\medsphere\modules\geo\service\GeoService.java
-\backend\src\main\java\com\medsphere\modules\geo\service\GeoServiceImpl.java
-\backend\src\main\java\com\medsphere\modules\mail\service
-\backend\src\main\java\com\medsphere\modules\mail\template
-\backend\src\main\java\com\medsphere\modules\mail\service\MailLanguageService.java
-\backend\src\main\java\com\medsphere\modules\mail\service\MailLanguageServiceImpl.java
-\backend\src\main\java\com\medsphere\modules\mail\service\MailService.java
-\backend\src\main\java\com\medsphere\modules\mail\service\MailServiceImpl.java
-\backend\src\main\java\com\medsphere\modules\mail\template\EmailLayout.java
-\backend\src\main\resources\db
-\backend\src\main\resources\i18n
-\backend\src\main\resources\static
-\backend\src\main\resources\templates
-\backend\src\main\resources\application-dev.yml
-\backend\src\main\resources\application.properties
-\backend\src\main\resources\application.yml
-\backend\src\main\resources\db\migration
-\backend\src\main\resources\db\migration\V1__init_schema.sql
-\backend\src\main\resources\db\migration\V2__add_password_changed_marker.sql
-\backend\src\main\resources\db\migration\V3__add_preferred_language.sql
-\backend\src\main\resources\i18n\mail_messages_en.properties
-\backend\src\main\resources\i18n\mail_messages_vi.properties
-\backend\src\test\java
-\backend\src\test\java\com
-\backend\src\test\java\com\medsphere
-\backend\src\test\java\com\medsphere\BackendApplicationTests.java
-\backend\src\test\java\com\medsphere\PasswordHashGenerator.java
-\frontend\.bolt
-\frontend\public
-\frontend\src
-\frontend\.env
-\frontend\.env.example
-\frontend\Dockerfile
-\frontend\eslint.config.js
-\frontend\index.html
-\frontend\nginx.conf
-\frontend\package-lock.json
-\frontend\package.json
-\frontend\postcss.config.js
-\frontend\README.md
-\frontend\readme1.md
-\frontend\README_v2.md
-\frontend\tailwind.config.js
-\frontend\tsconfig.app.json
-\frontend\tsconfig.json
-\frontend\tsconfig.node.json
-\frontend\vite.config.ts
-\frontend\.bolt\config.json
-\frontend\.bolt\prompt
-\frontend\public\logo.svg
-\frontend\src\core
-\frontend\src\packages
-\frontend\src\routes
-\frontend\src\App.tsx
-\frontend\src\index.css
-\frontend\src\main.tsx
-\frontend\src\vite-env.d.ts
-\frontend\src\core\assets
-\frontend\src\core\components
-\frontend\src\core\config
-\frontend\src\core\data
-\frontend\src\core\design
-\frontend\src\core\hooks
-\frontend\src\core\i18n
-\frontend\src\core\icons
-\frontend\src\core\layouts
-\frontend\src\core\services
-\frontend\src\core\store
-\frontend\src\core\theme
-\frontend\src\core\types
-\frontend\src\core\utils
-\frontend\src\core\assets\icons
-\frontend\src\core\assets\images
-\frontend\src\core\assets\logo
-\frontend\src\core\assets\icons\IconAI.svg
-\frontend\src\core\assets\icons\IconArrowDown.svg
-\frontend\src\core\assets\icons\IconAttach.svg
-\frontend\src\core\assets\icons\IconBell.svg
-\frontend\src\core\assets\icons\IconCamera.svg
-\frontend\src\core\assets\icons\IconChevronLeft.svg
-\frontend\src\core\assets\icons\IconChevronRight.svg
-\frontend\src\core\assets\icons\IconClose.svg
-\frontend\src\core\assets\icons\IconComment.svg
-\frontend\src\core\assets\icons\IconCopy.svg
-\frontend\src\core\assets\icons\IconEmoji.svg
-\frontend\src\core\assets\icons\IconEvents.svg
-\frontend\src\core\assets\icons\IconFacebookLogo.svg
-\frontend\src\core\assets\icons\IconFacebookWordmark.svg
-\frontend\src\core\assets\icons\IconFriends.svg
-\frontend\src\core\assets\icons\IconGaming.svg
-\frontend\src\core\assets\icons\IconGlobe.svg
-\frontend\src\core\assets\icons\IconGroups.svg
-\frontend\src\core\assets\icons\IconHeart.svg
-\frontend\src\core\assets\icons\IconHome.svg
-\frontend\src\core\assets\icons\IconLocation.svg
-\frontend\src\core\assets\icons\IconLogOut.svg
-\frontend\src\core\assets\icons\IconMarketplace.svg
-\frontend\src\core\assets\icons\IconMemories.svg
-\frontend\src\core\assets\icons\IconMenu.svg
-\frontend\src\core\assets\icons\IconMessenger.svg
-\frontend\src\core\assets\icons\IconMoreHoriz.svg
-\frontend\src\core\assets\icons\IconOnlineDot.svg
-\frontend\src\core\assets\icons\IconPlus.svg
-\frontend\src\core\assets\icons\IconSaved.svg
-\frontend\src\core\assets\icons\IconSearch.svg
-\frontend\src\core\assets\icons\IconSend.svg
-\frontend\src\core\assets\icons\IconSettings.svg
-\frontend\src\core\assets\icons\IconShare.svg
-\frontend\src\core\assets\icons\IconTag.svg
-\frontend\src\core\assets\icons\IconThumbDown.svg
-\frontend\src\core\assets\icons\IconThumbUp.svg
-\frontend\src\core\assets\icons\IconUser.svg
-\frontend\src\core\assets\icons\IconVideoCamera.svg
-\frontend\src\core\assets\icons\IconWatch.svg
-\frontend\src\core\assets\icons\index.ts
-\frontend\src\core\assets\images\doctor.jpg
-\frontend\src\core\assets\logo\full-logo.svg
-\frontend\src\core\assets\logo\logo.svg
-\frontend\src\core\components\Button.tsx
-\frontend\src\core\components\Card.tsx
-\frontend\src\core\components\index.ts
-\frontend\src\core\components\Input.tsx
-\frontend\src\core\components\LanguageSwitcher.tsx
-\frontend\src\core\components\PhoneInput.tsx
-\frontend\src\core\components\RouteLoadingBar.tsx
-\frontend\src\core\components\Spinner.tsx
-\frontend\src\core\config\app.config.ts
-\frontend\src\core\data\countries.ts
-\frontend\src\core\design\tokens.ts
-\frontend\src\core\hooks\useAuth.ts
-\frontend\src\core\i18n\locales
-\frontend\src\core\i18n\detectLanguage.ts
-\frontend\src\core\i18n\index.ts
-\frontend\src\core\i18n\locales\en.json
-\frontend\src\core\i18n\locales\vi.json
-\frontend\src\core\icons\index.ts
-\frontend\src\core\icons\SvgIcon.tsx
-\frontend\src\core\layouts\AuthLayout.tsx
-\frontend\src\core\layouts\index.ts
-\frontend\src\core\layouts\MainLayout.tsx
-\frontend\src\core\services\api.ts
-\frontend\src\core\services\authService.ts
-\frontend\src\core\store\authStore.ts
-\frontend\src\core\theme\colors.ts
-\frontend\src\core\theme\index.ts
-\frontend\src\core\utils\storage.ts
-\frontend\src\packages\ai
-\frontend\src\packages\auth
-\frontend\src\packages\home
-\frontend\src\packages\user
-\frontend\src\packages\ai\components
-\frontend\src\packages\ai\i18n
-\frontend\src\packages\ai\pages
-\frontend\src\packages\ai\styles
-\frontend\src\packages\ai\index.ts
-\frontend\src\packages\ai\components\AiChatHeader.tsx
-\frontend\src\packages\ai\components\AiInputBar.tsx
-\frontend\src\packages\ai\components\AiMessageBubble.tsx
-\frontend\src\packages\ai\components\AiMessageList.tsx
-\frontend\src\packages\ai\components\AiSidebar.tsx
-\frontend\src\packages\ai\i18n\en.ts
-\frontend\src\packages\ai\i18n\vi.ts
-\frontend\src\packages\ai\pages\AiPage.tsx
-\frontend\src\packages\ai\styles\ai.css
-\frontend\src\packages\auth\assets
-\frontend\src\packages\auth\components
-\frontend\src\packages\auth\hooks
-\frontend\src\packages\auth\i18n
-\frontend\src\packages\auth\pages
-\frontend\src\packages\auth\services
-\frontend\src\packages\auth\styles
-\frontend\src\packages\auth\types
-\frontend\src\packages\auth\index.ts
-\frontend\src\packages\auth\assets\icons
-\frontend\src\packages\auth\assets\images
-\frontend\src\packages\auth\assets\icons\IconEye.svg
-\frontend\src\packages\auth\assets\icons\IconEyeOff.svg
-\frontend\src\packages\auth\assets\icons\IconGoogle.svg
-\frontend\src\packages\auth\assets\icons\IconLock.svg
-\frontend\src\packages\auth\assets\icons\IconMail.svg
-\frontend\src\packages\auth\assets\icons\IconPhone.svg
-\frontend\src\packages\auth\assets\icons\IconShield.svg
-\frontend\src\packages\auth\assets\icons\index.ts
-\frontend\src\packages\auth\assets\images\doctor.jpg
-\frontend\src\packages\auth\components\AuthCard.tsx
-\frontend\src\packages\auth\components\BrandPanel.tsx
-\frontend\src\packages\auth\components\ForgotPasswordForm.tsx
-\frontend\src\packages\auth\components\LoginForm.tsx
-\frontend\src\packages\auth\components\OtpInput.tsx
-\frontend\src\packages\auth\components\RegisterForm.tsx
-\frontend\src\packages\auth\hooks\useForgotPassword.ts
-\frontend\src\packages\auth\hooks\useGoogleLogin.ts
-\frontend\src\packages\auth\hooks\useLogin.ts
-\frontend\src\packages\auth\hooks\useLogoutAllDevices.ts
-\frontend\src\packages\auth\hooks\useRegister.ts
-\frontend\src\packages\auth\i18n\en.ts
-\frontend\src\packages\auth\i18n\vi.ts
-\frontend\src\packages\auth\pages\ForgotPasswordPage.tsx
-\frontend\src\packages\auth\pages\LoginPage.tsx
-\frontend\src\packages\auth\pages\LogoutAllDevicesPage.tsx
-\frontend\src\packages\auth\pages\RegisterPage.tsx
-\frontend\src\packages\auth\services\authService.ts
-\frontend\src\packages\auth\styles\auth.css
-\frontend\src\packages\auth\types\auth.types.ts
-\frontend\src\packages\home\components
-\frontend\src\packages\home\layouts
-\frontend\src\packages\home\pages
-\frontend\src\packages\home\index.ts
-\frontend\src\packages\home\components\CreatePostCard.tsx
-\frontend\src\packages\home\components\LeftSidebar.tsx
-\frontend\src\packages\home\components\LoginModal.tsx
-\frontend\src\packages\home\components\NavBar.tsx
-\frontend\src\packages\home\components\NewsFeed.tsx
-\frontend\src\packages\home\components\PostCard.tsx
-\frontend\src\packages\home\components\RightSidebar.tsx
-\frontend\src\packages\home\components\StoryRow.tsx
-\frontend\src\packages\home\pages\HomePage.tsx
-\frontend\src\packages\user\pages
-\frontend\src\packages\user\pages\DashboardPage.tsx
-\frontend\src\packages\user\pages\index.ts
-\frontend\src\packages\user\pages\LoginPage.tsx
-\frontend\src\packages\user\pages\UsersPage.tsx
-\frontend\src\routes\index.tsx
-\frontend\src\routes\ProtectedRoute.tsx
+﻿├── backend
+│   ├── src
+│   │   ├── test
+│   │   │   └── java
+│   │   │       └── com
+│   │   │           └── medsphere
+│   │   │               ├── PasswordHashGenerator.java
+│   │   │               └── BackendApplicationTests.java
+│   │   └── main
+│   │       ├── resources
+│   │       │   ├── static
+│   │       │   ├── templates
+│   │       │   ├── db
+│   │       │   │   └── migration
+│   │       │   │       ├── V5__add_locked_specialty_to_conversations.sql
+│   │       │   │       ├── V6__add_ai_metadata_to_chat_messages.sql
+│   │       │   │       ├── V7__add_symptom_cache_to_conversations.sql
+│   │       │   │       ├── V4__create_conversations_and_messages.sql
+│   │       │   │       ├── V1__init_schema.sql
+│   │       │   │       ├── V2__add_password_changed_marker.sql
+│   │       │   │       └── V3__add_preferred_language.sql
+│   │       │   ├── i18n
+│   │       │   │   ├── mail_messages_vi.properties
+│   │       │   │   └── mail_messages_en.properties
+│   │       │   ├── application.yml
+│   │       │   ├── application.properties
+│   │       │   └── application-dev.yml
+│   │       └── java
+│   │           └── com
+│   │               └── medsphere
+│   │                   ├── modules
+│   │                   │   ├── geo
+│   │                   │   │   ├── service
+│   │                   │   │   │   ├── GeoServiceImpl.java
+│   │                   │   │   │   └── GeoService.java
+│   │                   │   │   ├── dto
+│   │                   │   │   │   └── GeoDto.java
+│   │                   │   │   └── controller
+│   │                   │   │       └── GeoController.java
+│   │                   │   ├── mail
+│   │                   │   │   ├── template
+│   │                   │   │   │   ├── PasswordChangedEmailBuilder.java
+│   │                   │   │   │   ├── WelcomeEmailBuilder.java
+│   │                   │   │   │   ├── OtpResetPasswordEmailBuilder.java
+│   │                   │   │   │   ├── EmailLayout.java
+│   │                   │   │   │   └── LoginNotificationEmailBuilder.java
+│   │                   │   │   └── service
+│   │                   │   │       ├── MailService.java
+│   │                   │   │       ├── MailServiceImpl.java
+│   │                   │   │       ├── MailLanguageService.java
+│   │                   │   │       └── MailLanguageServiceImpl.java
+│   │                   │   ├── ai
+│   │                   │   │   ├── entity
+│   │                   │   │   │   ├── MessageFeedback.java
+│   │                   │   │   │   ├── MessageRole.java
+│   │                   │   │   │   ├── ChatMessage.java
+│   │                   │   │   │   └── Conversation.java
+│   │                   │   │   ├── repository
+│   │                   │   │   │   ├── ConversationRepository.java
+│   │                   │   │   │   └── ChatMessageRepository.java
+│   │                   │   │   ├── service
+│   │                   │   │   │   ├── ChatServiceImpl.java
+│   │                   │   │   │   └── ChatService.java
+│   │                   │   │   ├── config
+│   │                   │   │   │   └── AiServiceConfig.java
+│   │                   │   │   ├── controller
+│   │                   │   │   │   └── ChatController.java
+│   │                   │   │   └── dto
+│   │                   │   │       └── ChatDtos.java
+│   │                   │   └── auth
+│   │                   │       ├── enums
+│   │                   │       │   ├── Role.java
+│   │                   │       │   ├── VerificationStatus.java
+│   │                   │       │   ├── AuthProvider.java
+│   │                   │       │   └── Gender.java
+│   │                   │       ├── repository
+│   │                   │       │   ├── PatientProfileRepository.java
+│   │                   │       │   ├── UserRepository.java
+│   │                   │       │   ├── BusinessProfileRepository.java
+│   │                   │       │   └── DoctorProfileRepository.java
+│   │                   │       ├── service
+│   │                   │       │   ├── AuthServiceImpl.java
+│   │                   │       │   ├── GoogleTokenVerifier.java
+│   │                   │       │   ├── AuthService.java
+│   │                   │       │   ├── AdminService.java
+│   │                   │       │   └── AdminServiceImpl.java
+│   │                   │       ├── controller
+│   │                   │       │   ├── AuthController.java
+│   │                   │       │   └── AdminController.java
+│   │                   │       ├── dto
+│   │                   │       │   ├── ForgotPasswordDtos.java
+│   │                   │       │   ├── AuthDtos.java
+│   │                   │       │   └── AdminDtos.java
+│   │                   │       └── entity
+│   │                   │           ├── PatientProfile.java
+│   │                   │           ├── User.java
+│   │                   │           ├── BusinessProfile.java
+│   │                   │           └── DoctorProfile.java
+│   │                   ├── core
+│   │                   │   ├── security
+│   │                   │   │   ├── JwtUtil.java
+│   │                   │   │   ├── JwtAuthFilter.java
+│   │                   │   │   └── CustomUserDetailsService.java
+│   │                   │   ├── response
+│   │                   │   │   ├── PageResponse.java
+│   │                   │   │   └── ApiResponse.java
+│   │                   │   ├── web
+│   │                   │   │   └── RequestIpUtils.java
+│   │                   │   ├── validation
+│   │                   │   │   ├── ValidE164Phone.java
+│   │                   │   │   └── E164PhoneValidator.java
+│   │                   │   ├── geo
+│   │                   │   │   └── CountryLanguageMapper.java
+│   │                   │   ├── constants
+│   │                   │   │   └── AppConstants.java
+│   │                   │   ├── config
+│   │                   │   │   ├── RedisConfig.java
+│   │                   │   │   ├── SecurityConfig.java
+│   │                   │   │   ├── JwtConfig.java
+│   │                   │   │   └── MailMessageSourceConfig.java
+│   │                   │   ├── exception
+│   │                   │   │   ├── GlobalExceptionHandler.java
+│   │                   │   │   ├── ErrorCode.java
+│   │                   │   │   └── AppException.java
+│   │                   │   └── entity
+│   │                   │       └── BaseEntity.java
+│   │                   └── MedsphereApplication.java
+│   ├── .mvn
+│   │   └── wrapper
+│   │       └── maven-wrapper.properties
+│   ├── mvnw
+│   ├── HELP.md
+│   ├── pom.xml
+│   ├── mvnw.cmd
+│   ├── .gitattributes
+│   ├── .env
+│   ├── Dockerfile
+│   └── .gitignore
+├── frontend
+│   ├── src
+│   │   ├── routes
+│   │   │   ├── ProtectedRoute.tsx
+│   │   │   └── index.tsx
+│   │   ├── packages
+│   │   │   ├── home
+│   │   │   │   ├── pages
+│   │   │   │   │   └── HomePage.tsx
+│   │   │   │   ├── layouts
+│   │   │   │   ├── components
+│   │   │   │   │   ├── PostCard.tsx
+│   │   │   │   │   ├── NewsFeed.tsx
+│   │   │   │   │   ├── StoryRow.tsx
+│   │   │   │   │   ├── RightSidebar.tsx
+│   │   │   │   │   ├── LeftSidebar.tsx
+│   │   │   │   │   ├── CreatePostCard.tsx
+│   │   │   │   │   ├── NavBar.tsx
+│   │   │   │   │   └── LoginModal.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── user
+│   │   │   │   └── pages
+│   │   │   │       ├── LoginPage.tsx
+│   │   │   │       ├── UsersPage.tsx
+│   │   │   │       ├── DashboardPage.tsx
+│   │   │   │       └── index.ts
+│   │   │   ├── ai
+│   │   │   │   ├── services
+│   │   │   │   │   └── chatService.ts
+│   │   │   │   ├── styles
+│   │   │   │   │   └── ai.css
+│   │   │   │   ├── pages
+│   │   │   │   │   └── AiPage.tsx
+│   │   │   │   ├── components
+│   │   │   │   │   ├── AiMessageBubble.tsx
+│   │   │   │   │   ├── AiMessageList.tsx
+│   │   │   │   │   ├── AiSidebar.tsx
+│   │   │   │   │   ├── AiChatHeader.tsx
+│   │   │   │   │   ├── AiDetailPanel.tsx
+│   │   │   │   │   └── AiInputBar.tsx
+│   │   │   │   ├── i18n
+│   │   │   │   │   ├── vi.ts
+│   │   │   │   │   └── en.ts
+│   │   │   │   └── index.ts
+│   │   │   └── auth
+│   │   │       ├── services
+│   │   │       │   └── authService.ts
+│   │   │       ├── pages
+│   │   │       │   ├── LogoutAllDevicesPage.tsx
+│   │   │       │   ├── RegisterPage.tsx
+│   │   │       │   ├── ForgotPasswordPage.tsx
+│   │   │       │   └── LoginPage.tsx
+│   │   │       ├── types
+│   │   │       │   └── auth.types.ts
+│   │   │       ├── styles
+│   │   │       │   └── auth.css
+│   │   │       ├── components
+│   │   │       │   ├── LoginForm.tsx
+│   │   │       │   ├── OtpInput.tsx
+│   │   │       │   ├── RegisterForm.tsx
+│   │   │       │   ├── AuthCard.tsx
+│   │   │       │   ├── BrandPanel.tsx
+│   │   │       │   └── ForgotPasswordForm.tsx
+│   │   │       ├── assets
+│   │   │       │   ├── images
+│   │   │       │   │   └── doctor.jpg
+│   │   │       │   └── icons
+│   │   │       │       ├── IconPhone.svg
+│   │   │       │       ├── IconMail.svg
+│   │   │       │       ├── index.ts
+│   │   │       │       ├── IconShield.svg
+│   │   │       │       ├── IconEyeOff.svg
+│   │   │       │       ├── IconEye.svg
+│   │   │       │       ├── IconLock.svg
+│   │   │       │       └── IconGoogle.svg
+│   │   │       ├── i18n
+│   │   │       │   ├── vi.ts
+│   │   │       │   └── en.ts
+│   │   │       ├── hooks
+│   │   │       │   ├── useLogoutAllDevices.ts
+│   │   │       │   ├── useRegister.ts
+│   │   │       │   ├── useLogin.ts
+│   │   │       │   ├── useForgotPassword.ts
+│   │   │       │   └── useGoogleLogin.ts
+│   │   │       └── index.ts
+│   │   ├── core
+│   │   │   ├── services
+│   │   │   │   ├── authService.ts
+│   │   │   │   └── api.ts
+│   │   │   ├── layouts
+│   │   │   │   ├── MainLayout.tsx
+│   │   │   │   ├── index.ts
+│   │   │   │   └── AuthLayout.tsx
+│   │   │   ├── icons
+│   │   │   │   ├── SvgIcon.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── store
+│   │   │   │   ├── toastStore.ts
+│   │   │   │   └── authStore.ts
+│   │   │   ├── utils
+│   │   │   │   └── storage.ts
+│   │   │   ├── types
+│   │   │   ├── theme
+│   │   │   │   ├── index.ts
+│   │   │   │   └── colors.ts
+│   │   │   ├── config
+│   │   │   │   └── app.config.ts
+│   │   │   ├── components
+│   │   │   │   ├── RouteLoadingBar.tsx
+│   │   │   │   ├── PhoneInput.tsx
+│   │   │   │   ├── ToastContainer.tsx
+│   │   │   │   ├── Spinner.tsx
+│   │   │   │   ├── LanguageSwitcher.tsx
+│   │   │   │   ├── Card.tsx
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Input.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── assets
+│   │   │   │   ├── logo
+│   │   │   │   │   ├── logo.svg
+│   │   │   │   │   └── full-logo.svg
+│   │   │   │   ├── images
+│   │   │   │   │   └── doctor.jpg
+│   │   │   │   └── icons
+│   │   │   │       ├── IconOnlineDot.svg
+│   │   │   │       ├── IconMoreHoriz.svg
+│   │   │   │       ├── IconPlus.svg
+│   │   │   │       ├── IconSearch.svg
+│   │   │   │       ├── IconSaved.svg
+│   │   │   │       ├── IconMarketplace.svg
+│   │   │   │       ├── IconLogOut.svg
+│   │   │   │       ├── IconMemories.svg
+│   │   │   │       ├── IconMessenger.svg
+│   │   │   │       ├── IconMenu.svg
+│   │   │   │       ├── IconUser.svg
+│   │   │   │       ├── IconThumbUp.svg
+│   │   │   │       ├── IconVideoCamera.svg
+│   │   │   │       ├── index.ts
+│   │   │   │       ├── IconWatch.svg
+│   │   │   │       ├── IconSettings.svg
+│   │   │   │       ├── IconSend.svg
+│   │   │   │       ├── IconShare.svg
+│   │   │   │       ├── IconThumbDown.svg
+│   │   │   │       ├── IconTag.svg
+│   │   │   │       ├── IconLocation.svg
+│   │   │   │       ├── IconChevronRight.svg
+│   │   │   │       ├── IconChevronLeft.svg
+│   │   │   │       ├── IconClose.svg
+│   │   │   │       ├── IconCopy.svg
+│   │   │   │       ├── IconComment.svg
+│   │   │   │       ├── IconArrowDown.svg
+│   │   │   │       ├── IconAI.svg
+│   │   │   │       ├── IconAttach.svg
+│   │   │   │       ├── IconCamera.svg
+│   │   │   │       ├── IconBell.svg
+│   │   │   │       ├── IconGlobe.svg
+│   │   │   │       ├── IconGaming.svg
+│   │   │   │       ├── IconGroups.svg
+│   │   │   │       ├── IconHome.svg
+│   │   │   │       ├── IconHeart.svg
+│   │   │   │       ├── IconEvents.svg
+│   │   │   │       ├── IconEmoji.svg
+│   │   │   │       ├── IconFacebookLogo.svg
+│   │   │   │       ├── IconFriends.svg
+│   │   │   │       └── IconFacebookWordmark.svg
+│   │   │   ├── data
+│   │   │   │   └── countries.ts
+│   │   │   ├── i18n
+│   │   │   │   ├── locales
+│   │   │   │   │   ├── vi.json
+│   │   │   │   │   └── en.json
+│   │   │   │   ├── index.ts
+│   │   │   │   └── detectLanguage.ts
+│   │   │   ├── hooks
+│   │   │   │   └── useAuth.ts
+│   │   │   └── design
+│   │   │       └── tokens.ts
+│   │   ├── main.tsx
+│   │   ├── vite-env.d.ts
+│   │   ├── App.tsx
+│   │   └── index.css
+│   ├── public
+│   │   └── logo.svg
+│   ├── .bolt
+│   │   ├── prompt
+│   │   └── config.json
+│   ├── readme1.md
+│   ├── README_v2.md
+│   ├── postcss.config.js
+│   ├── README.md
+│   ├── tailwind.config.js
+│   ├── tsconfig.node.json
+│   ├── vite.config.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── .gitignore
+│   ├── Dockerfile
+│   ├── .env
+│   ├── .env.example
+│   ├── eslint.config.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── index.html
+│   └── nginx.conf
+├── .github
+│   ├── modernize
+│   │   └── java-upgrade
+│   │       ├── hooks
+│   │       │   └── scripts
+│   │       │       ├── recordToolUse.sh
+│   │       │       └── recordToolUse.ps1
+│   │       └── .gitignore
+│   └── java-upgrade
+│       ├── hooks
+│       │   └── scripts
+│       │       ├── recordToolUse.sh
+│       │       └── recordToolUse.ps1
+│       └── .gitignore
+├── ai-service
+│   ├── app
+│   │   ├── shared
+│   │   │   ├── rag
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── medical_search.py
+│   │   │   ├── topic_lock.py
+│   │   │   ├── __init__.py
+│   │   │   ├── schemas.py
+│   │   │   └── specialties.py
+│   │   ├── modules
+│   │   │   ├── prescription_analyzer
+│   │   │   │   ├── schemas.py
+│   │   │   │   ├── service.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── constants.py
+│   │   │   │   ├── prompts.py
+│   │   │   │   └── routes.py
+│   │   │   ├── symptom_checker
+│   │   │   │   ├── schemas.py
+│   │   │   │   ├── service.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── constants.py
+│   │   │   │   ├── prompts.py
+│   │   │   │   └── routes.py
+│   │   │   ├── drug_qa
+│   │   │   │   ├── schemas.py
+│   │   │   │   ├── service.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── constants.py
+│   │   │   │   ├── prompts.py
+│   │   │   │   └── routes.py
+│   │   │   ├── medical_record_explainer
+│   │   │   │   ├── schemas.py
+│   │   │   │   ├── service.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── constants.py
+│   │   │   │   ├── prompts.py
+│   │   │   │   └── routes.py
+│   │   │   └── __init__.py
+│   │   ├── core
+│   │   │   ├── llm_client.py
+│   │   │   └── config.py
+│   │   └── main.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── .env
+│   └── .gitignore
+├── docker-compose.yml
+├── backend_full_log.txt
+├── structure.txt
+├── README.md
+├── .env.example
+├── .env
+├── backend-logs.txt
+└── .gitignore

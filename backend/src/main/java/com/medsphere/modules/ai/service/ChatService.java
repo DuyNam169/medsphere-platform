@@ -18,4 +18,8 @@ public interface ChatService {
     ChatDtos.MessageResponse setFeedback(UUID userId, UUID messageId, ChatDtos.FeedbackRequest request);
 
     void deleteConversation(UUID userId, UUID conversationId);
+
+    // Luồng chat chuẩn: BE lưu tin nhắn user, gọi ai-service, lưu tin nhắn
+    // assistant, cập nhật lockedSpecialty nếu cần, trả về đủ thông tin cho FE.
+    ChatDtos.ChatReplyResponse chat(UUID userId, UUID conversationId, ChatDtos.SendChatMessageRequest request);
 }

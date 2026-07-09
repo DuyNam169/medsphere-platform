@@ -1,7 +1,7 @@
 // ============================================================
 // AiPage.tsx — src/packages/ai/pages/AiPage.tsx
 // ============================================================
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../core/store/authStore';
@@ -9,10 +9,14 @@ import AiSidebar from '../components/AiSidebar';
 import AiChatHeader from '../components/AiChatHeader';
 import AiMessageList from '../components/AiMessageList';
 import AiInputBar from '../components/AiInputBar';
+import AiDetailPanel, { DetailPanelData } from '../components/AiDetailPanel';
 import { Message } from '../components/AiMessageBubble';
 import { chatService, ConversationSummary } from '../services/chatService';
 import '../styles/ai.css';
 import { Attachment } from '../components/AiInputBar';
+
+const DETAIL_PANEL_MIN_WIDTH = 320;
+const DETAIL_PANEL_MAX_RATIO = 0.85;
 
 const AiPage: React.FC = () => {
   const { t } = useTranslation();
@@ -29,9 +33,18 @@ const AiPage: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [isLoadingConversations, setIsLoadingConversations] = useState(false);
 
+  const [detailPanelOpen, setDetailPanelOpen] = useState(false);
+  const [detailPanelWidth, setDetailPanelWidth] = useState<number>(
+    Math.round(window.innerWidth / 2)
+  );
+  const [detailPanelData, setDetailPanelData] = useState<DetailPanelData | null>(null);
+
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartWidthRef = useRef(0);
+
   const requireLogin = () => navigate('/login');
 
-  // Nạp danh sách hội thoại khi đăng nhập / đăng xuất
   useEffect(() => {
     if (!isAuthenticated) {
       setConversations([]);
@@ -45,10 +58,47 @@ const AiPage: React.FC = () => {
       .finally(() => setIsLoadingConversations(false));
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      const delta = dragStartXRef.current - e.clientX;
+      const maxWidth = Math.round(window.innerWidth * DETAIL_PANEL_MAX_RATIO);
+      const nextWidth = Math.min(
+        maxWidth,
+        Math.max(DETAIL_PANEL_MIN_WIDTH, dragStartWidthRef.current + delta)
+      );
+      setDetailPanelWidth(nextWidth);
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRef.current = false;
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  const handleStartResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragStartWidthRef.current = detailPanelWidth;
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+  };
+
   const handleNewChat = () => {
     if (!isAuthenticated) return requireLogin();
     setMessages([]);
     setActiveConvId(null);
+    setDetailPanelOpen(false);
+    setDetailPanelData(null);
   };
 
   const handleConvClick = async (id: string) => {
@@ -63,8 +113,15 @@ const AiPage: React.FC = () => {
           content: m.content,
           timestamp: new Date(m.createdAt),
           feedback: m.feedback,
+          sources: m.sources,
+          suggestedSpecialties: m.suggestedSpecialties,
+          emergency: m.emergency,
+          topicMismatch: m.topicMismatch,
+          structuredSummary: m.structuredSummary,
         }))
       );
+      setDetailPanelOpen(false);
+      setDetailPanelData(null);
     } catch {
       // Hội thoại không tồn tại hoặc không thuộc về user — bỏ qua, giữ nguyên UI hiện tại
     }
@@ -81,87 +138,119 @@ const AiPage: React.FC = () => {
     });
   };
 
+  const openDetailPanelFor = (msg: Message) => {
+      setDetailPanelData({
+        sources: msg.sources,
+        suggestedSpecialties: msg.suggestedSpecialties,
+        emergency: msg.emergency,
+        topicMismatch: msg.topicMismatch,
+        structuredSummary: msg.structuredSummary,
+      });
+      setDetailPanelWidth(Math.round(window.innerWidth / 2));
+      setDetailPanelOpen(true);
+    };
+
+  const performSend = async (conversationId: string, userContent: string) => {
+    const optimisticId = `local-${Date.now()}`;
+    const userMsg: Message = {
+      id: optimisticId,
+      role: 'user',
+      content: userContent,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsThinking(true);
+
+    try {
+      const result = await chatService.chat(conversationId, userContent);
+
+      const assistantMsg: Message = {
+        id: result.assistantMessage.id,
+        role: 'assistant',
+        content: result.assistantMessage.content,
+        timestamp: new Date(result.assistantMessage.createdAt),
+        sources: result.sources,
+        suggestedSpecialties: result.suggestedSpecialties,
+        emergency: result.emergency,
+        topicMismatch: result.topicMismatch,
+        mismatchOriginalMessage: result.topicMismatch ? userContent : undefined,
+        structuredSummary: result.assistantMessage.structuredSummary,
+      };
+
+      setMessages((prev) => {
+        const withRealUserId = prev.map((m) =>
+          m.id === optimisticId
+            ? {
+                ...m,
+                id: result.userMessage.id,
+                timestamp: new Date(result.userMessage.createdAt),
+              }
+            : m
+        );
+        return [...withRealUserId, assistantMsg];
+      });
+
+      const hasDetails =
+        (result.sources && result.sources.length > 0) ||
+        (result.suggestedSpecialties && result.suggestedSpecialties.length > 0) ||
+        !!result.assistantMessage.structuredSummary;
+      if (hasDetails) {
+        openDetailPanelFor(assistantMsg);
+      }
+
+      touchConversationInList(conversationId, userContent.slice(0, 60));
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          role: 'assistant',
+          content: t('ai.errorReply'),
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
   const handleSend = async () => {
     if (!inputValue.trim() || isThinking) return;
+    if (!isAuthenticated) return requireLogin();
 
     const userContent = inputValue.trim();
+    setInputValue('');
+
     let conversationId = activeConvId;
 
-    // Tạo hội thoại mới trên backend nếu đây là tin nhắn đầu tiên và đã đăng nhập
-    if (isAuthenticated && !conversationId) {
+    if (!conversationId) {
       try {
         const created = await chatService.createConversation();
         conversationId = created.id;
         setActiveConvId(conversationId);
         touchConversationInList(conversationId, null);
       } catch {
-        // Nếu tạo hội thoại thất bại, vẫn tiếp tục chat ở chế độ không lưu trữ
+        return;
       }
     }
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: userContent,
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, userMsg]);
-    setInputValue('');
-    setIsThinking(true);
+    await performSend(conversationId, userContent);
+  };
 
-    // Lưu tin nhắn user vào backend (không chặn nếu lỗi)
-    if (isAuthenticated && conversationId) {
-      try {
-        const saved = await chatService.sendMessage(conversationId, 'user', userContent);
-        userMsg.id = saved.id;
-        setMessages((prev) => prev.map((m) => (m === userMsg ? { ...m, id: saved.id } : m)));
-        touchConversationInList(conversationId, userContent.slice(0, 60));
-      } catch {
-        // bỏ qua, tin nhắn vẫn hiển thị local
-      }
-    }
+  const handleCreateNewChatWithQuestion = async (question: string) => {
+    if (!question.trim()) return;
+    if (!isAuthenticated) return requireLogin();
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_AI_SERVICE_URL}/api/ai/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: userContent,
-          history: messages.map((m) => ({ role: m.role, content: m.content })),
-        }),
-      });
-
-      if (!response.ok) throw new Error('AI service error');
-      const data = await response.json();
-
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.reply,
-        timestamp: new Date(),
-      };
-
-      if (isAuthenticated && conversationId) {
-        try {
-          const saved = await chatService.sendMessage(conversationId, 'assistant', data.reply);
-          aiMsg.id = saved.id;
-          touchConversationInList(conversationId, null);
-        } catch {
-          // bỏ qua, tin nhắn vẫn hiển thị local
-        }
-      }
-
-      setMessages((prev) => [...prev, aiMsg]);
-    } catch (error) {
-      const errorMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: t('ai.errorReply'),
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMsg]);
-    } finally {
-      setIsThinking(false);
+      const created = await chatService.createConversation();
+      setActiveConvId(created.id);
+      setMessages([]);
+      setDetailPanelOpen(false);
+      setDetailPanelData(null);
+      touchConversationInList(created.id, null);
+      await performSend(created.id, question);
+    } catch {
+      // Không tạo được hội thoại mới — bỏ qua, người dùng có thể thử lại
     }
   };
 
@@ -248,6 +337,8 @@ const AiPage: React.FC = () => {
             isThinking={isThinking}
             onSuggestClick={handleSuggestClick}
             onFeedback={handleFeedback}
+            onCreateNewChat={handleCreateNewChatWithQuestion}
+            onViewDetails={openDetailPanelFor}
           />
 
           <AiInputBar
@@ -262,6 +353,14 @@ const AiPage: React.FC = () => {
             onPasteLongText={handlePasteLongText}
           />
         </main>
+
+        <AiDetailPanel
+          isOpen={detailPanelOpen}
+          widthPx={detailPanelWidth}
+          data={detailPanelData}
+          onClose={() => setDetailPanelOpen(false)}
+          onStartResize={handleStartResize}
+        />
       </div>
     </div>
   );

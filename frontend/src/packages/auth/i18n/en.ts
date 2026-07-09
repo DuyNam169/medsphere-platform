@@ -11,12 +11,12 @@ const authEn = {
     pageSubtitle: 'Book appointments and stay informed, all in one place.',
 
     // --- Form labels ---
-    emailOrPhone: 'Email or phone number',
+    emailOrPhone: 'Email',
     password: 'Password',
     rememberMe: 'Remember me',
 
     // --- Placeholders ---
-    emailPlaceholder: 'Enter your email or phone',
+    emailPlaceholder: 'Enter your email',
     passwordPlaceholder: 'Enter your password',
 
     // --- Buttons ---

@@ -841,3 +841,337 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.ai-topic-mismatch-box {
+  margin-top: 8px;
+}
+
+.ai-topic-mismatch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #0d9488;
+  background: #ffffff;
+  color: #0d9488;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ai-topic-mismatch-btn:hover {
+  background: #0d9488;
+  color: #ffffff;
+}
+
+/* ===== Khung chi tiết bên phải (Detail Panel) ===== */
+.ai-layout {
+  position: relative;
+}
+
+/* ===== Khung chi tiết bên phải (Detail Panel) — kéo thả tự do ===== */
+.ai-layout {
+  position: relative;
+}
+
+.ai-detail-panel {
+  flex-shrink: 0;
+  border-left: 1px solid #e5e7eb;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.ai-detail-panel__resize-handle {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 10;
+}
+
+.ai-detail-panel__resize-handle:hover {
+  background: rgba(13, 148, 136, 0.15);
+}
+
+.ai-detail-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ai-detail-panel__title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.ai-detail-panel__header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.ai-detail-panel__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.ai-detail-panel__icon-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.ai-detail-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.ai-detail-panel__empty {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.ai-detail-panel__emergency-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.ai-detail-panel__section {
+  margin-bottom: 20px;
+}
+
+.ai-detail-panel__section-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.ai-detail-panel__specialty-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-detail-panel__specialty-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #0d9488;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ai-detail-panel__source-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-detail-panel__source-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color 0.15s ease;
+}
+
+.ai-detail-panel__source-card:hover {
+  border-color: #0d9488;
+}
+
+.ai-detail-panel__source-card a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+}
+
+.ai-detail-panel__source-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ai-detail-panel__source-url {
+  font-size: 12px;
+  color: #0d9488;
+  word-break: break-all;
+}
+
+/* Nút "Xem chi tiết" dưới mỗi tin nhắn AI */
+.ai-view-details-box {
+  margin-top: 6px;
+}
+
+.ai-view-details-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ai-view-details-btn:hover {
+  border-color: #0d9488;
+  color: #0d9488;
+}
+
+/* ===== Bảng tổng hợp trực quan (StructuredSummary) trong Detail Panel ===== */
+
+/* Badge mức độ khẩn cấp — 4 mức, thay cho .ai-detail-panel__emergency-badge
+   cũ (giữ lại class cũ để tương thích ngược, không xóa). */
+.ai-detail-panel__level-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.ai-detail-panel__level-badge--normal {
+  background: #ecfdf5;
+  color: #0d9488;
+}
+
+.ai-detail-panel__level-badge--monitor {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.ai-detail-panel__level-badge--see-doctor-soon {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.ai-detail-panel__level-badge--emergency {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Tóm tắt nhanh — nổi bật hơn text thường, dùng làm điểm neo đầu tiên */
+.ai-detail-panel__quick-summary {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Text thường (hậu quả, mô tả...) */
+.ai-detail-panel__text {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Danh sách dạng tag (triệu chứng) — khác specialty-tag ở màu trung tính */
+.ai-detail-panel__tag-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-detail-panel__tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Danh sách dạng gạch đầu dòng (nguyên nhân, biện pháp, cảnh báo...) */
+.ai-detail-panel__bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-detail-panel__bullet-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.ai-detail-panel__bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+/* Nhóm nguyên nhân — phổ biến / ít gặp / cần lưu ý */
+.ai-detail-panel__cause-group {
+  margin-bottom: 12px;
+}
+
+.ai-detail-panel__cause-group:last-child {
+  margin-bottom: 0;
+}
+
+.ai-detail-panel__cause-group-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+/* Nhóm "cần lưu ý" — nhấn nhẹ bằng chấm màu cam thay vì xám trung tính */
+.ai-detail-panel__cause-group--serious .ai-detail-panel__cause-group-label {
+  color: #c2410c;
+}
+
+.ai-detail-panel__cause-group--serious .ai-detail-panel__bullet-list li::before {
+  background: #f97316;
+}

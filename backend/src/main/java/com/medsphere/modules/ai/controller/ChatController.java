@@ -47,6 +47,14 @@ public class ChatController {
         return ApiResponse.success(chatService.addMessage(UUID.fromString(userId), conversationId, request));
     }
 
+    @PostMapping("/conversations/{conversationId}/chat")
+    public ApiResponse<ChatDtos.ChatReplyResponse> chat(
+            @AuthenticationPrincipal String userId,
+            @PathVariable UUID conversationId,
+            @Valid @RequestBody ChatDtos.SendChatMessageRequest request) {
+        return ApiResponse.success(chatService.chat(UUID.fromString(userId), conversationId, request));
+    }
+
     @PatchMapping("/messages/{messageId}/feedback")
     public ApiResponse<ChatDtos.MessageResponse> setFeedback(
             @AuthenticationPrincipal String userId,
